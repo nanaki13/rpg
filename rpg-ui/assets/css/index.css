@@ -1,0 +1,74 @@
+div#root {
+  background-color: #edfffe;
+  
+}
+app-rpg{
+    font-family: 'Architects Daughter', cursive;
+}
+.black-on-white {
+  background: #15151438;
+  color: white;
+}
+
+.black-s-on-white {
+  background: black;
+  color: white;
+}
+
+.name-input {
+  max-width: 10em;
+  color: black;
+}
+.edit-card {
+  width: 25em;
+}
+.menu {
+  position: fixed;
+  top: 0;
+  max-width: 10em;
+}
+
+.menu-link {
+  cursor: pointer;
+}
+
+.top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.bg-change-log {
+  background-color: #241c6bd1;
+  color: aliceblue;
+}
+.bg-1 {
+  background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870130454567/image1.jpg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-attachment: fixed;
+  background-position: center;
+  background-color: #d0d1fad1;
+}
+.bg-2 {
+  background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870580555806/image2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-color: #d0d1fad1;
+}
+.input-stat {
+  background: #15151438;
+  color: white;
+  width: 3em;
+}
+.popup-close {
+  position: absolute;
+  right: 0;
+}
+
+.border-b {
+  border: 2px solid #00ff4080!important;
+}
+.time-line{
+  color : white;
+}

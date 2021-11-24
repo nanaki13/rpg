@@ -1,0 +1,6 @@
+target
+projet/target
+metals.sbt
+.bsp
+.metals
+.vscode
