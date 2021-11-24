@@ -2,6 +2,7 @@ package bon.jo.rpg
 
 import bon.jo.rpg.CommandeCtx
 import bon.jo.rpg.stat.raw
+import bon.jo.rpg.Team
 import bon.jo.rpg.stat.GameElement
 import bon.jo.rpg.stat.GameId
 import bon.jo.rpg.stat.GameId.ID.given
@@ -17,7 +18,13 @@ object TimedTrait:
     id += 1
     GameId.ID(id)
   
-  case class TimedObject( _value: GameElement,id : GameId.ID,_pos : Int= 0,_commandeCtx : CommandeCtx,effetcts : List[Effect],modifiers :  List[Mod] = Nil)(using Timed[GameElement]) extends TimedTrait[GameElement]:
+  case class TimedObject( 
+  _value: GameElement,
+  id : GameId.ID,
+  _pos : Int= 0,
+  _commandeCtx : CommandeCtx,
+  effetcts : List[Effect],
+ team : Team, modifiers :  List[Mod] = Nil)(using Timed[GameElement]) extends TimedTrait[GameElement]:
     val workerTimed: Timed[GameElement] = summon[Timed[GameElement]]
     override def withPos(i: Int): TimedTrait[GameElement] = copy(_pos = i)
     
@@ -30,7 +37,7 @@ object TimedTrait:
         case _ => this
       withMoid.copy(effetcts = effetcts :+ effetct)
   extension (value: GameElement)(using Timed[GameElement]) 
-    def timed =  TimedObject(value,id   = getId,0,CommandeCtx.Rien,Nil)
+    def timed(t : Team) =  TimedObject(value,id   = getId,0,CommandeCtx.Rien,Nil,t)
 
 trait TimedTrait[-A] {
   this : TimedObject =>

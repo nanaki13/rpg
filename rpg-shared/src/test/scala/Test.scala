@@ -2,7 +2,7 @@ import collection.mutable.Stack
 import org.scalatest._
 import flatspec._
 import matchers._
-import bon.jo.memo.Script.*
+import bon.jo.rpg.util.Script.*
 import bon.jo.common.give.given
 
 class ExampleSpec extends AnyFlatSpec with should.Matchers {

@@ -4,3 +4,7 @@ metals.sbt
 .bsp
 .metals
 .vscode
+project/.bloop/
+project/project/
+rpg-ui/memo-ui-fastopt.js
+.bloop

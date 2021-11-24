@@ -21,6 +21,7 @@ object AffectResolver:
     def readAll(id : Iterable[(Affect,FormuleType)])(using c: Dao[Formule,(Affect,FormuleType)]) : Exec[Iterable[Formule]]=
       c.readAll(id)
     def formulesMap : R[Map[(Affect,FormuleType),Formule]] = formules.map(a => a.map(e => (e.affect,e.formuleType) -> e).toMap )
+    def dao : Dao[Formule,(Affect,FormuleType)] ?=>  Dao[Formule,(Affect,FormuleType)] = summon
 
     
 

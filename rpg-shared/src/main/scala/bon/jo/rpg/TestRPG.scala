@@ -26,7 +26,7 @@ object TestRPG extends App:
 
     
   given TimeLineParam =  TimeLineParam(0, 50, 70)
-  given Timed[GameElement] = summon[Timed[bon.jo.rpg.stat.Perso]]
+  import bon.jo.rpg.stat.Perso.given
   given yl :  TimeLineOps = TimeLineOps()
   given PlayerUI = PlayerUIStdIn.value
 
@@ -46,8 +46,8 @@ object TestRPG extends App:
 
   val ctw = summon[PersoCtx]
   import ctw.given
-  yl.add(p1)
-  yl.add(p2)
+  yl.add(p1,Team("a"))
+  yl.add(p2,Team("b"))
 
 
   for _ <- 1 to 100 do

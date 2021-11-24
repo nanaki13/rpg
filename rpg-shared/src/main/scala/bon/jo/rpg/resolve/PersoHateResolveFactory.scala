@@ -9,12 +9,12 @@ import bon.jo.rpg.draw.draw
 import scala.util.Random
 import bon.jo.rpg.util.Script.*
 import bon.jo.rpg.resolve.PersoResolveContext.*
-trait PersoSlowPersoFactory(using formulesMap: Map[Formule.ID, Formule]):
+trait PersoHateResolveFactory(using formulesMap: Map[Formule.ID, Formule]):
 
   import Formule.given
   import bon.jo.common.give.given
 
-  given Affect = Affect.Slow
+  given Affect = Affect.Hate
 
 
   inline def successFormule : Formule = AffectResolver.read(FormuleType.ChanceToSuccess).getOrElse(throw new RuntimeException("NO CHANCE TO SUCCESS"))
@@ -29,8 +29,8 @@ trait PersoSlowPersoFactory(using formulesMap: Map[Formule.ID, Formule]):
   val facteurF: ((IntBaseStat, IntBaseStat)) => Float = facteurFormule.formule.toFunction[(IntBaseStat, IntBaseStat)]()
   val turnDurationF: ((IntBaseStat, IntBaseStat)) => Float = turnDuration.formule.toFunction[(IntBaseStat, IntBaseStat)]()
 
-  def createResolve: SlowResolve =
-    new SlowResolve :
+  def createResolve: HateResolve =
+    new HateResolve :
       type P = TimedTrait[GameElement]
       val r = Random()
 
@@ -48,7 +48,7 @@ trait PersoSlowPersoFactory(using formulesMap: Map[Formule.ID, Formule]):
               ok = {
                 PlayerUI(s"Réussite!")
 
-                val eff: FactorEffectt = FactorEffectt(turnDuration, factor.toFloat, Affect.Slow)
+                val eff: FactorEffectt = FactorEffectt(turnDuration, factor.toFloat, Affect.Hate)
                 uiProcess(ciblep.addEffect(eff), eff)
               }
               ,

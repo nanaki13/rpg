@@ -98,8 +98,8 @@ object BattleTimeLine:
       }
 
 
-    def add(a: GameElement): Unit =
-      timedObjs = timedObjs :+ a.timed
+    def add(a: GameElement,team : Team): Unit =
+      timedObjs = timedObjs :+ a.timed(team)
     
 
 

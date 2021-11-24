@@ -30,6 +30,7 @@ import bon.jo.rpg.resolve.FormuleType
 import bon.jo.rpg.resolve.Formule
 import bon.jo.rpg.resolve.PersoAttaqueResolve
 import bon.jo.rpg.resolve.PersoSlowPersoFactory
+import bon.jo.rpg.resolve.PersoHateResolveFactory
 import bon.jo.rpg.dao.FormuleDao
 import org.scalajs.dom.raw.HTMLElement
 import bon.jo.rpg.AffectResolver.AffectFormuleResolver
@@ -40,6 +41,8 @@ import bon.jo.rpg.ui.TimeLineCpnt
 import bon.jo.rpg.ui.PerCpnt
 import bon.jo.rpg.ui.HtmlUi
 import bon.jo.rpg.ui.page.RpgSimuPage
+import scala.concurrent.Future
+import bon.jo.html.PopUp
 
 
 
@@ -54,7 +57,7 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
   val weaponDao: MappedDao[WeaponJS, Weapon,Int] with WeaponDao
   val persoDao: MappedDao[PersoJS, Perso,Int] with PersoDao
   val formuleDao: MappedDao[FormuleJs, Formule,(Affect,FormuleType)] with FormuleDao 
-
+  given Dao[bon.jo.rpg.resolve.Formule,(bon.jo.rpg.Affect, bon.jo.rpg.resolve.FormuleType)] =( formuleDao:  Dao[Formule,(Affect,FormuleType)] ) 
   val deckCreation: Div =
  
     $c.div[Div]
@@ -62,7 +65,7 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
 
 
 
-  given Timed[GameElement] =bon.jo.rpg.stat.Perso.PeroPero.asInstanceOf[Timed[GameElement]]
+  import bon.jo.rpg.stat.Perso.given
   given timeLine: TimeLineOps = TimeLineOps()
   val root = $ref div {
     d =>
@@ -89,22 +92,30 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
     
    
 
-    given Dao[bon.jo.rpg.resolve.Formule,(bon.jo.rpg.Affect, bon.jo.rpg.resolve.FormuleType)] =( formuleDao:  Dao[Formule,(Affect,FormuleType)] ) 
+    
 
- 
+
+    FormuleDao.checkFormule.map{
+      missingCount => 
+        if(missingCount == 0){
+          
+          formulesMap.map{
+          ( f  :  Map[Formule.ID,Formule] )=>
+          given Map[Formule.ID,Formule] =f
+          given ResolveContext = new resolve.DefaultResolveContext{
+            override def attaqueResolve:AttaqueResolve = (new PersoAttaqueResolve{}).createResolve
+            override def slowResolve:SlowResolve = (new PersoSlowPersoFactory{}).createResolve
+            override def hateResolve:HateResolve = (new PersoHateResolveFactory{}).createResolve
+          }
+          go
+
+    }
+
+        }
+    }
 
    
 
-    formulesMap.map{
-      ( f  :  Map[Formule.ID,Formule] )=>
-        given Map[Formule.ID,Formule] =f
-        given ResolveContext = new resolve.DefaultResolveContext{
-          override def attaqueResolve:AttaqueResolve = (new PersoAttaqueResolve{}).createResolve
-          override def slowResolve:SlowResolve = (new PersoSlowPersoFactory{}).createResolve
-        }
-        go
-
-    }
  //   given Resolver[Perso, Perso,Action.Attaque.type] = CalculsPersoPerso
     def go(using ResolveContext):Unit=
   

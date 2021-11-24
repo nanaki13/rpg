@@ -30,7 +30,7 @@ import bon.jo.rpg.RandomName
 import bon.jo.html.HtmlRep.PrXmlId
 
 import scala.collection.mutable.ListBuffer
-import bon.jo.memo.Script.*
+import bon.jo.rpg.util.Script.*
 import bon.jo.html.HtmlEventDef.ExH
 import bon.jo.rpg.stat.AnyRefBaseStat
 import bon.jo.rpg.resolve.FormuleType
@@ -125,11 +125,16 @@ object EditFormauleAffect:
             runExp
           })
         }
+        def newFormuleTypeSelected(ftSelect : HTMLSelectElement):Unit = 
+          val formuleType =FormuleType.valueOf(ftSelect.value)
+          formuleObj = formuleObj.copy(formuleType =  formuleType)
+          readDb
           //dao.
         val selectFormuleTypeSelect = $t.select[HTMLSelectElement]{
           childs(Affect.values.head.formuleTypes.map(optionFormuleType).toSeq: _ * )
-          
+          onchange[HTMLSelectElement](newFormuleTypeSelected)
           }
+          
 
        
         
@@ -140,10 +145,7 @@ object EditFormauleAffect:
           formuleObj = formuleObj.copy(affect,formuleType)
           Affect.valueOf(affectSelect.value).formuleTypes.map(optionFormuleType).foreach(selectFormuleTypeSelect.appendChild)
           readDb
-        def newFormuleTypeSelected(ftSelect : HTMLSelectElement):Unit = 
-          val formuleType =FormuleType.valueOf(ftSelect.value)
-          formuleObj = formuleObj.copy(formuleType =  formuleType)
-          readDb
+
 
 
         val selectAffectSelect : HTMLSelectElement = $t.select[HTMLSelectElement]{

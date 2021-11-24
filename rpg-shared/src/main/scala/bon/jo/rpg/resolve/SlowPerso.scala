@@ -8,7 +8,7 @@ import bon.jo.rpg.ui.PlayerUI
 import bon.jo.rpg.resolve.PersoResolveContext.*
 import bon.jo.rpg.stat.raw.IntBaseStat
 import bon.jo.rpg.BattleTimeLine.TimeLineParam
-import bon.jo.memo.Script.*
+import bon.jo.rpg.util.Script.*
 import bon.jo.rpg.draw.draw
 object SlowPerso extends  SlowResolve :
 

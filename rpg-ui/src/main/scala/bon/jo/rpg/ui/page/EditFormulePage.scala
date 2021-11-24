@@ -7,7 +7,7 @@ import org.scalajs.dom.html.{Span, Button}
 import bon.jo.html.DomBuilder.html.$t
 import bon.jo.html.DomBuilder.html.$
 import $t.*
-import bon.jo.memo.Script._
+import bon.jo.rpg.util.Script._
 import scala.language.dynamics
 import org.scalajs.dom.raw.HTMLInputElement
 import bon.jo.html.SimpleView

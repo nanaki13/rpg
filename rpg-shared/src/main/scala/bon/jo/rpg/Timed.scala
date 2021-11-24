@@ -1,12 +1,13 @@
 package bon.jo.rpg
 
 
-trait Timed[-A]:
-  def simpleName(value: A): String
+trait Timed[A]:
+  type B <: A
+  def simpleName(value: B ): String
 
 
-  def speed(a: A): Int
+  def speed(a: B ): Int
 
 
 
-  def canChoice(a : A):List[Commande]
+  def canChoice(a : B ):List[Commande]

@@ -12,6 +12,8 @@ import bon.jo.util.Mapper
 import scala.concurrent.ExecutionContext
 import bon.jo.rpg.Affect
 import bon.jo.dao.Dao
+import scala.concurrent.Future
+import bon.jo.html.PopUp
 
 trait FormuleDao extends Dao[Formule,(Affect,FormuleType)]
 trait FormuleJs extends scalajs.js.Object:
@@ -22,6 +24,18 @@ trait FormuleJs extends scalajs.js.Object:
 
 object FormuleDao {
 
+   
+  def checkFormule(using dao :Dao[Formule,(Affect, FormuleType)],ex : ExecutionContext) = Future.sequence(Affect.values.map(e => e.formuleTypes.map(t => e -> t)).flatMap{
+     affTpe =>
+     affTpe.map(e => dao.read(e).map(r => e -> r))
+    }).map{
+      el => 
+        el.filter(_._2.isEmpty).map(_._1)
+    }.map{
+      el => 
+        el.foreach(e => PopUp(s"Missing formule ${e._1 },${ e._2}"))
+        el.size
+      }
   trait FormuleDaoJs extends LocalJsDao[FormuleJs,(Affect,FormuleType)]:
     val name = "FormuleDao"
     val fId: FormuleJs => (Affect,FormuleType) = e =>(Affect.valueOf(e.affect),FormuleType.valueOf(e.formuleType))

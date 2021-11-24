@@ -37,15 +37,15 @@ object Perso:
 
 
 
-  object PeroPero extends Timed[Perso]:
+  given Timed[GameElement] with
 
+    override type B = Perso
+    override def speed(a: Perso): Int = (a.stats.viv / 10f).round
 
-    override def speed(a: Perso): Int = (a.asInstanceOf[Perso].stats.viv / 10f).round
-
-    override def simpleName(value: Perso): String = value.asInstanceOf[Perso].name
+    override def simpleName(value: Perso): String = value.name
 
     override def canChoice(a: Perso): List[Commande] = 
-      val perso = a.asInstanceOf[Perso]
+      val perso = a
       perso.commandes
 
   //given  Timed[Perso] = PeroPero

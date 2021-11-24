@@ -11,7 +11,7 @@ import scala.util.Random
 import bon.jo.rpg.ui.PlayerUI
 import bon.jo.dao.Dao
 import bon.jo.rpg.AffectResolver.AffectFormuleResolver
-import bon.jo.memo.Script.*
+import bon.jo.rpg.util.Script.*
 object PersoAttaqueResolve extends  AttaqueResolve{
 
     type P = TimedTrait[GameElement]
@@ -58,12 +58,12 @@ trait PersoAttaqueResolve(using formulesMap :  Map[Formule.ID,Formule]) :
                     case (att : Perso,cible :  Perso) =>
                     
                         val degat = degatF(att.stats,cible.stats).round
-                        uiProcess(ciblep.withValue(cible.copy(hpVar = cible.hpVar - degat)),degat)
+                        uiProcess(attp,ciblep.withValue(cible.copy(hpVar = cible.hpVar - degat)),degat)
 
-            def uiProcess(perso : P,degat : Int)(using ui : PlayerUI):P=
+            def uiProcess(attp:  TimedTrait[Perso],perso : P,degat : Int)(using ui : PlayerUI):P=
         
                 val  p : Perso  =  perso.value
-                ui.message(s"${p.name} a perdu ${degat} pv, il lui reste ${p.hpVar} pv",5000)
+                ui.message(s"${attp.value[Perso].name} attaque ${p.name} qui perd ${degat} pv, il lui reste ${p.hpVar} pv",5000)
                 ui.cpntMap(perso.id).update(Some(perso.cast))
                 perso
 
