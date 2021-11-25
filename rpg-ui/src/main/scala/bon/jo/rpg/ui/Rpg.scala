@@ -7,6 +7,7 @@ import bon.jo.html.HTMLDef.{$c, $ref, HtmlOps}
 import bon.jo.html.HtmlEventDef.ExH
 import bon.jo.html.HtmlRep
 import bon.jo.html.HtmlRep.PrXmlId
+import bon.jo.html.DomBuilder.html
 import bon.jo.rpg.BattleTimeLine.{TimeLineParam,TimeLineOps}
 import bon.jo.rpg.dao.{PersoDao, WeaponDao}
 
@@ -44,7 +45,7 @@ import bon.jo.rpg.ui.page.RpgSimuPage
 import scala.concurrent.Future
 import bon.jo.html.PopUp
 
-
+import  bon.jo.rpg.resolve.ResolveFactory
 
 
 
@@ -105,6 +106,11 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
           given ResolveContext = new resolve.DefaultResolveContext{
             override def attaqueResolve:AttaqueResolve = (new PersoAttaqueResolve{}).createResolve
             override def slowResolve:SlowResolve = (new PersoSlowPersoFactory{}).createResolve
+
+            override def caffeinResolve:CaffeinResolve = (new ResolveFactory:
+              override val affect = Affect.Caffein
+              override def uiMessage(att: Perso,perso: Perso, factor: FactorEffectt):String = "CAFEEIN"
+            ).createResolve.asInstanceOf[CaffeinResolve]
             override def hateResolve:HateResolve = (new PersoHateResolveFactory{}).createResolve
           }
           go
@@ -114,7 +120,14 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
         }
     }
 
-   
+    def end(winner : Team,losser : List[Team]): Unit = 
+      root.clear()
+      import html.$
+      val win = $.div{
+        $.text(s"Winner : ${winner.name}")
+      }
+      root.appendChild(win)
+        
 
  //   given Resolver[Perso, Perso,Action.Attaque.type] = CalculsPersoPerso
     def go(using ResolveContext):Unit=
@@ -132,7 +145,7 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
       cpntMap.flatMap(_._2.get).foreach(e => root += e)
 
       clearUI
-      val cpntTimeLine = new TimeLineCpnt( linkedUI)
+      val cpntTimeLine = new TimeLineCpnt( linkedUI,end)
       root.appendChild(cpntTimeLine.tlView)
       cpntTimeLine.tlView.$userCanDrag()
       cpntTimeLine.doEvent()

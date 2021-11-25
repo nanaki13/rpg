@@ -14,6 +14,7 @@ import bon.jo.html.DomBuilder.*
 import bon.jo.html.DomBuilder.html.*
 import bon.jo.html.DomBuilder.html.$.*
 import bon.jo.app.ChildParent
+import bon.jo.html.HtmlEventDef.ExH
 class Progress:
 
   val pBar =  $.div(attr("class" -> "progress-bar bg-danger" ,"role" ->"progressbar" ,"style" ->"width: 100%", "aria-valuenow" ->"100", "aria-valuemin" ->"0" ,"aria-valuemax" ->"100"))
@@ -45,6 +46,9 @@ class PerCpnt(val perso: Perso) extends HtmlCpnt with UpdatableCpnt[Perso]:
       nHp
     else 0 
     hpVarCpnt.update(nHp)
+    if(nHp == 0 ){
+        head._class = "dead"
+    }
 
   updateHp(perso)
 
@@ -90,11 +94,27 @@ class PerCpnt(val perso: Perso) extends HtmlCpnt with UpdatableCpnt[Perso]:
 
 
   override val get: IterableOnce[HTMLElement] =
+    val hideStat = $.div{$.text("+")}
+    val carChild = List(row(List($t("stat") +: contStat, $t("L") +: contArmL, $t("G") +: contArmR, $t("stat+") +: lcomputedStat)))
+    val carac = $va div List(hideStat)
+    hideStat.style.zIndex = "1000"
+    hideStat.style.cursor = "pointer"
+    hideStat.$click{
+      e => {
+        if hideStat.textContent == "+"
+        then
+          hideStat.textContent = "-"
+          carChild.foreach(carac.appendChild(_))
+        else
+          hideStat.textContent = "+"
+          carChild.foreach(_.removeFromDom())
+      }
+    }
     val ret = $va div List(
       $va div List((nameDiv.wrap(tag.div))) := { me =>
         me._class = "card-title black-on-white"
       },descDiv,hpVarCpnt.html,
-        $va div List(row(List($t("stat") +: contStat, $t("L") +: contArmL, $t("G") +: contArmR, $t("stat+") +: lcomputedStat))) := { me =>
+        carac := { me =>
         me._class = "card-body black-on-white"
         me.style.fontSize = "0.7em"
       }

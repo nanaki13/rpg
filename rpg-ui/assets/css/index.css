@@ -48,6 +48,7 @@ app-rpg{
   background-attachment: fixed;
   background-position: center;
   background-color: #d0d1fad1;
+  height: fit-content;
 }
 .bg-2 {
   background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870580555806/image2.jpg");
@@ -55,6 +56,7 @@ app-rpg{
   background-size: cover;
   background-position: center;
   background-color: #d0d1fad1;
+  height: fit-content;
 }
 .input-stat {
   background: #15151438;

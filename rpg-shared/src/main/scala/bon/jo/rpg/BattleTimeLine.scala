@@ -40,6 +40,7 @@ object BattleTimeLine:
     case  NextStateResultAsking( fast : ITP[GameElement], ask :  Future[ITP[GameElement]],change : List[UpdateGameElement])  extends NextStateResult(change)
 
 
+
  // def apply(using TimeLineParam) =
   object TimeLineOps{
     class i()(using params :  TimeLineParam,t : Timed[GameElement]) extends TimeLineOps
@@ -57,18 +58,26 @@ object BattleTimeLine:
 
 
     def update(pf: TPA): TPA =
+      if !pf.isDead then
+        pf.withPos(pf.pos + pf.speed)
+      else
+        pf
 
-      pf.withPos(pf.pos + pf.speed)
 
-
-
-    def state(pos: Int, spooed: Int): State =
-      pos match
-        case i if (i < params.chooseAction) => State.BeforeChooseAction
-        case i if (i >= params.chooseAction && (i < params.chooseAction + spooed)) => State.ChooseAction
-        case i if (i < params.action) => State.BeforeResolveAction
-        case i if (i >= params.action) => State.ResolveAction
-        case _ => State.NoState
+    def state(e : LTPA): Seq[(TPA, State)] = e.map(p => (p, state(p)))
+    
+    def state(pos: TPA): State =
+      if(!pos.isDead) then
+        
+        val spooed = pos.speed
+        pos.pos match
+          case i if (i < params.chooseAction) => State.BeforeChooseAction
+          case i if (i >= params.chooseAction && (i < params.chooseAction + spooed)) => State.ChooseAction
+          case i if (i < params.action) => State.BeforeResolveAction
+          case i if (i >= params.action) => State.ResolveAction
+          case _ => State.NoState
+      else
+        State.NoState  
 
     def updateAll(a :LTPA ): LTPA =
       a.map(update)
@@ -86,16 +95,30 @@ object BattleTimeLine:
           updatedMap.getOrElse(e.id,e)
       }
         
-      
-  
 
-    def doStep(using   WithUI,ExecutionContext ) = 
+
+    def checkGameOver(t : LTPA) =
+      val temas = t.map(_.team).toSet
+      val teamAliveMap = t.groupBy(_.team).map((k,v) => 
+        k -> (v.count(_.isDead) != v.length)
+        )
+      val aliveTeam =  teamAliveMap.filter((k,v) => v)
+      if aliveTeam.size == 1
+      then
+        StepResult.GameOver(aliveTeam.head._1,aliveTeam.filter((k,v) => !v).map(_._1).toList )
+      else StepResult.Continu
+    
+    def doStep()(using   WithUI,ExecutionContext ):Future[StepResult] = 
+
       nextState(timedObjs) match 
-      case NextStateResult.NextStateResultFast(fast,change) => timedObjs = dochange(fast,change).toList.sorted
-      case NextStateResult.NextStateResultAsking(fast, ask,change) => ask foreach{
-        askWithResult =>
-          timedObjs =  dochange(fast++askWithResult,change).toList.sorted
-      }
+        case NextStateResult.NextStateResultFast(fast,change) => 
+          timedObjs = dochange(fast,change).toList.sorted
+          Future.successful(checkGameOver(timedObjs))
+        case NextStateResult.NextStateResultAsking(fast, ask,change) => ask map{
+          askWithResult =>
+            timedObjs =  dochange(fast++askWithResult,change).toList.sorted
+            checkGameOver(timedObjs)
+        }
 
 
     def add(a: GameElement,team : Team): Unit =
@@ -106,7 +129,7 @@ object BattleTimeLine:
 
 
 
-    def state(e : LTPA): Seq[(TPA, State)] = e.map(p => (p, state(p.pos, p.speed)))
+
 
 
 
@@ -200,5 +223,8 @@ object BattleTimeLine:
 
 
   case class TimeLineParam(start: Int, chooseAction: Int, action: Int)
+enum StepResult:  
+  case GameOver(winner : Team, looser : List[Team])
+  case Continu
 
 

@@ -17,8 +17,10 @@ import scala.util.{Failure, Success}
 import bon.jo.rpg.BattleTimeLine.TimeLineOps
 import bon.jo.rpg.ui.PlayerUI
 import scala.concurrent.ExecutionContext
+import bon.jo.rpg.StepResult
+import bon.jo.rpg.Team
 //type Resolve = bon.jo.rpg.AffectResolver[TimedTrait[GameElement], List[TimedTrait[GameElement]]]
-class TimeLineCpnt(val withUI: WithUI)(using el:  TimeLineOps):
+class TimeLineCpnt(val withUI: WithUI,end : (winner : Team,losser : List[Team])=> Unit)(using el:  TimeLineOps):
 
 
   import withUI.given
@@ -68,6 +70,7 @@ class TimeLineCpnt(val withUI: WithUI)(using el:  TimeLineOps):
     }
 
 
+  
 
         
   
@@ -78,7 +81,13 @@ class TimeLineCpnt(val withUI: WithUI)(using el:  TimeLineOps):
     import withUI.given
     lazy val gameLoop: Int = window.setInterval(()=>{
       if el.pause == 0 then {
-        el.doStep
+       val res : Future[StepResult] = el.doStep()
+       res.foreach{
+           case StepResult.GameOver(winner,looser) => 
+            window.clearInterval(gameLoop)
+            end(winner,looser)
+           case _ =>
+       }
       }else{
         window.clearInterval(gameLoop)
       }

@@ -9,7 +9,8 @@ import org.scalajs.dom.raw.HTMLElement
 import bon.jo.html.SimpleView
 import scala.collection.mutable
 import scala.util.{Failure, Success}
-
+import scalajs.js
+import org.scalajs.dom.console
 object SType:
   type Param[A <: StatsWithName] = (Rpg, mutable.ListBuffer[EditStatWithName[A]])
   extension[A <: StatsWithName] (e: Option[Param[A]])
@@ -22,9 +23,12 @@ object SType:
     override def deleteButton(): Option[HTMLElement => HTMLElement] = option.map(_._1.executionContext) map {
       implicit ec =>
         SimpleView.withClose(_, {
+          console.log(read.id)
           dao.delete(read.id) onComplete {
             case Success(value) => PopUp("Suppression OK")
-            case Failure(exception) => PopUp("Suppression KO")
+            case Failure(exception) => 
+              console.log(exception)
+              PopUp("Suppression KO")
           }
         }, "top-right")
     }

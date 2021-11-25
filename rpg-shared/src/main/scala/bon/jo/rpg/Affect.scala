@@ -28,6 +28,7 @@ enum Affect(val name : String,val vivMod:Option[Float] = None) extends SystemEle
   def formuleTypes : Iterable[FormuleType] = this match
     case Affect.Attaque => Some(FormuleType.Degat)
     case Affect.Slow => FormuleType.values
+    case Affect.Caffein => FormuleType.withoutDegat()
     case Affect.Hate => FormuleType.values
     case _ => Some(FormuleType.ChanceToSuccess)
 

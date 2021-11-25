@@ -8,6 +8,7 @@ import bon.jo.rpg.stat.GameId
 import bon.jo.rpg.stat.GameId.ID.given
 import java.util.concurrent.Flow
 import bon.jo.rpg.TimedTrait.TimedObject
+import bon.jo.rpg.stat.Perso
 case class Mod(speedMod : Float = 1,cause : Effect)
 object TimedTrait:
   private var id = 0
@@ -24,7 +25,7 @@ object TimedTrait:
   _pos : Int= 0,
   _commandeCtx : CommandeCtx,
   effetcts : List[Effect],
- team : Team, modifiers :  List[Mod] = Nil)(using Timed[GameElement]) extends TimedTrait[GameElement]:
+ _team : Team, modifiers :  List[Mod] = Nil)(using Timed[GameElement]) extends TimedTrait[GameElement]:
     val workerTimed: Timed[GameElement] = summon[Timed[GameElement]]
     override def withPos(i: Int): TimedTrait[GameElement] = copy(_pos = i)
     
@@ -43,6 +44,9 @@ trait TimedTrait[-A] {
   this : TimedObject =>
   val self = this
   val id : GameId.ID
+
+  inline def isDead: Boolean = self._value match
+    case a : Perso => a.hpVar <= 0
 
   def stats : raw.IntBaseStat = _value.self.stats
   val effetcts : List[Effect]
@@ -65,7 +69,7 @@ trait TimedTrait[-A] {
 
 
   def pos: Int = _pos
-
+  def team: Team = self._team
 
   def simpleName: String = workerTimed.simpleName(value)
 
