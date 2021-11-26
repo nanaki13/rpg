@@ -51,11 +51,12 @@ app-rpg{
   height: fit-content;
 }
 .bg-2 {
-  background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870580555806/image2.jpg");
+  /* background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870580555806/image2.jpg");*/
+  
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background-color: #d0d1fad1;
+  background-color: #000000d1;
   height: fit-content;
 }
 .input-stat {
@@ -73,4 +74,30 @@ app-rpg{
 }
 .time-line{
   color : white;
+}
+.root-image-choose{
+  z-index: 1000;
+  position: fixed;
+  max-width: 50em;
+  background-color: #121114;
+  display: flex;
+  flex-wrap: wrap;
+  /* border-style: ridge; */
+  border: #9f0a0a ridge 0.1em;
+  padding: 0.5em;
+  border-radius: 2%;
+  color: white;
+  box-shadow: 10px 5px 5px white
+}
+.img-choose-cnt{
+  
+  z-index: 1001;
+}
+.img-choose{
+  width: 5em;
+}
+.perso-edit-img{
+  width: 15em;
+  height: 15em;
+  margin: auto;
 }

@@ -34,6 +34,7 @@ object Export:
         case Commande.Attaque(a,b)=> b.id
         case a : Commande => a.toString 
       }.toJSArray
+      dPerso.image = t.image.path
       dPerso.asInstanceOf[PersoJS]
 
     def unapply(value: PersoJS): Option[Perso] =
@@ -42,8 +43,10 @@ object Export:
           val left = value.leftHandWeapon.toOption.flatMap(WeaponJS.unapply)
           val right = value.rightHandWeapon.toOption.flatMap(WeaponJS.unapply)
           val commandes = value.commandes map( Commande(_ ,left,right))
-         
-          Some(new Perso(value.id, value.name, value.desc, stat, value.lvl, commandes.toList, left, right))
+          
+          val img =Image(value.image.getOrElse(""))
+            
+          Some(new Perso(value.id, value.name, value.desc, stat,img, value.lvl, commandes.toList, left, right))
         case _ => None
 
 
@@ -69,6 +72,7 @@ object Export:
     val id: Int
     val desc: String
     val stats: StatJS
+    val image: js.UndefOr[String]
    
 
   trait JSCompanion[T]:

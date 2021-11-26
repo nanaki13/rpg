@@ -15,6 +15,7 @@ import bon.jo.rpg.BattleTimeLine
 import bon.jo.rpg.resolve.PersoResolveContext._
 import bon.jo.rpg.LR
 import bon.jo.rpg.resolve.PersoCtx
+import bon.jo.rpg.ui.Image
 
 
 
@@ -24,7 +25,7 @@ object Perso:
   object ArmePerso:
     def unapply(e : StatsWithName):Weapons=
       e match
-        case Perso(_,_,_,_, _, _, _, l, r) => Some(l,r)
+        case Perso(_,_,_,_, _, _, _, l, r,_) => Some(l,r)
         case _ => None
 
   trait PlayerPersoUI extends PlayerUI:
@@ -57,12 +58,12 @@ object Perso:
 case class Perso(  id : Int, name: String,desc : String, stats : AnyRefBaseStat[Int], hpVar: Int ,lvl : Int , commandes : List[Commande] ,
    leftHandWeapon: Option[Weapon],
 rightHandWeapon: Option[Weapon] 
-                  ) extends Actor with GameElement with StatsWithName:
+                  ,image : Image) extends Actor with GameElement with StatsWithName:
 
-  def this(  id : Int, name: String,desc : String, stats : AnyRefBaseStat[Int], lvl : Int = 1, commandes : List[Commande] = Nil,
+  def this(  id : Int, name: String,desc : String, stats : AnyRefBaseStat[Int],image : Image, lvl : Int = 1, commandes : List[Commande] = Nil,
    leftHandWeapon: Option[Weapon]= None,
 rightHandWeapon: Option[Weapon] = None
-                ) = this(id,name,desc,stats,stats.hp,lvl,commandes,leftHandWeapon,rightHandWeapon)
+                ) = this(id,name,desc,stats,stats.hp,lvl,commandes,leftHandWeapon,rightHandWeapon,image)
   def randomWeapon() =
      copy(leftHandWeapon = Some(randomSoin(Actor.randomWeapon())),rightHandWeapon = Some(randomSoin(Actor.randomWeapon())))
   override def withId[A <: StatsWithName](id: Int): A = copy(id= id).asInstanceOf[A]

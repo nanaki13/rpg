@@ -46,6 +46,8 @@ import scala.concurrent.Future
 import bon.jo.html.PopUp
 
 import  bon.jo.rpg.resolve.ResolveFactory
+import bon.jo.rpg.dao.ImageJs
+import bon.jo.rpg.dao.ImageDao
 
 
 
@@ -58,6 +60,7 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
   val weaponDao: MappedDao[WeaponJS, Weapon,Int] with WeaponDao
   val persoDao: MappedDao[PersoJS, Perso,Int] with PersoDao
   val formuleDao: MappedDao[FormuleJs, Formule,(Affect,FormuleType)] with FormuleDao 
+  val iamgeDao: MappedDao[ImageJs, Image,String] with ImageDao
   given Dao[bon.jo.rpg.resolve.Formule,(bon.jo.rpg.Affect, bon.jo.rpg.resolve.FormuleType)] =( formuleDao:  Dao[Formule,(Affect,FormuleType)] ) 
   val deckCreation: Div =
  

@@ -44,6 +44,7 @@ import scala.util.Failure
 import bon.jo.html.PopUp
 import bon.jo.rpg.ui.edit.EditStatWithName
 import bon.jo.rpg.ui.Rpg
+import bon.jo.rpg.ui.Image
 object EditFormauleAffect:
       extension (affect : Affect)
 
@@ -65,9 +66,9 @@ object EditFormauleAffect:
          
         }
 
-        val att: Perso = Actor.randomActor(e => new Perso(1, RandomName(),"J'attaque", e))
+        val att: Perso = Actor.randomActor(e => new Perso(1, RandomName(),"J'attaque", e,Image("")))
 
-        val deff: Perso = Actor.randomActor(e => new Perso(2, RandomName(),"Je défend", e))
+        val deff: Perso = Actor.randomActor(e => new Perso(2, RandomName(),"Je défend", e,Image("")))
         val buff = ListBuffer.empty[EditStatWithName[Perso]]
 
         val List(attCpnt,deffCpnt) =  List(att,deff).map(_.htmlp((summon[Rpg],buff)))

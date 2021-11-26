@@ -29,6 +29,7 @@ import scala.scalajs.js
 import scala.util.{Failure, Success}
 import bon.jo.rpg.ui.Rpg
 import bon.jo.rpg.dao.IntMappedDaoType
+import bon.jo.rpg.ui.Image
 trait EditPage[A <: StatsWithName, B <: scalajs.js.Object] extends Ec:
   type Hrep = HtmlRepParam[A, SType.Param[A], EditStatWithName[A]]
   implicit val v: Hrep
@@ -142,7 +143,7 @@ trait ArmesPage:
       override val rpg: Rpg = self
       override val dao: IntMappedDaoType[PersoJS, Perso] with PersoDao = rpg.persoDao
 
-      override def random(): Perso = Actor.randomActor(e => new Perso(0, RandomName(),"Le plus beau des héros", e))
+      override def random(): Perso = Actor.randomActor(e => new Perso(0, RandomName(),"Le plus beau des héros", e,Image("")))
 
       override implicit val executionContext: ExecutionContext = self.executionContext
     }

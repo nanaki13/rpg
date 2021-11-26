@@ -24,7 +24,7 @@ import java.nio.charset.Charset
 import java.util.Base64
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
-import scala.scalajs.js.JSConverters.JSRichIterableOnce
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.JSON
 import scala.util.{Failure, Success}
 import bon.jo.rpg.dao.FormuleDao.FormuleDaoJs
@@ -37,10 +37,15 @@ import bon.jo.rpg.ui.edit.EditFormauleAffect
 import bon.jo.rpg.ui.page.EditFormulePage
 import bon.jo.rpg.ui.page.ChangeLog
 import bon.jo.rpg.ui.Rpg
-
+import bon.jo.rpg.ui.Image
+import bon.jo.rpg.dao.ImageDao.ImageDaoJs
+import bon.jo.rpg.dao.ImageDao
+import bon.jo.rpg.dao.ImageJs
+import bon.jo.dao.IndexedDB.Version
 object RpgJsMain extends App:
   given  ((Weapon, Int) => Weapon) = _.withId(_) 
   given  ((Perso, Int) => Perso) = _.withId(_) 
+  given Version = Version(5)
   document.body.classList.add("bg-1")
   object editPage extends EditFormulePage
   given Rpg with
@@ -54,18 +59,29 @@ object RpgJsMain extends App:
       def keyPath : String = "id"
     }
     given Conversion[(Affect,FormuleType),scalajs.js.Any] = s => 
-      println(js.Array(s._1.id,s._2.toString))
       js.Array(s._1.id,s._2.toString)
     val formuleJsDao: FormuleDaoJs = new FormuleDaoJs {
       override implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
       def keyPath : Array[String] = Array("affect","formuleType")
+    }
+
+    given Conversion[String,scalajs.js.Any] = (s : String) => 
+      val ret :  js.Any = s
+      ret
+    val imageDaoJs: ImageDaoJs = new ImageDaoJs {
+      override implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
+      def keyPath  : String = "path"
     }
     
     override val weaponDao: MappedDao[WeaponJS, Weapon,Int] with WeaponDao with IntMappedDao[WeaponJS, Weapon]= WeaponDao(weaponJsDao)
     override val persoDao: MappedDao[PersoJS, Perso,Int] with PersoDao = PersoDao(persoJsDao)
     override val formuleDao: MappedDao[FormuleJs, Formule,(Affect,FormuleType)] with FormuleDao = FormuleDao(formuleJsDao)
 
+    override val iamgeDao: MappedDao[ImageJs, Image,String] with ImageDao = ImageDao(imageDaoJs)
+
     private val fromChild =  $c.a[Anchor]:= (menuLink => {menuLink._class = "nav-item menu-link"})
+
+   
     override def createButton(addRandomButton: Button): Unit =
       fromChild.clear()
       fromChild += addRandomButton
@@ -178,9 +194,40 @@ object RpgJsMain extends App:
     val rp = rpg
     import rp.executionContext
     given HTMLElement  = rpg.root
-    IndexedDB.init(rp.weaponDao.daoJs, rp.persoDao.daoJs, rp.formuleDao.daoJs) map { _ =>
+    IndexedDB.init(rp.weaponDao.daoJs, rp.persoDao.daoJs, rp.formuleDao.daoJs,rp.iamgeDao.daoJs) flatMap { _ =>
       rp.init()
+      val img = List(Image("assets/img/Apollo.png"),
+      Image("assets/img/Apollo2.png"),
+      Image("assets/img/Bandit.png"),
+      Image("assets/img/Cid.png"),
+      Image("assets/img/Commandant.png"),
+      Image("assets/img/ElecBird.png"),
+      Image("assets/img/Felin.png"),
+      Image("assets/img/Giant.png"),
+      Image("assets/img/Gob.png"),
+      Image("assets/img/Igaroid.png"),
+      Image("assets/img/Insect.png"),
+      Image("assets/img/Kid.png"),
+      Image("assets/img/Kid2.png"),
+      Image("assets/img/Linoa.png"),
+      Image("assets/img/Luck.png"),
+      Image("assets/img/Luck2.png"),
+      Image("assets/img/Magnet.png"),
+      Image("assets/img/Magus.png"),
+      Image("assets/img/Mirror.png"),
+      Image("assets/img/Momo.png"),
+      Image("assets/img/Monitorog.png"),
+      Image("assets/img/PotHead.png"),
+      Image("assets/img/RedDemon.png"),
+      Image("assets/img/Robo.png"),
+      Image("assets/img/RobotLord.png"),
+      Image("assets/img/Time.png"),
+      Image("assets/img/Wheel.png"),
+      Image("assets/img/YellowDemon.png"),
+      Image("assets/img/Bandit.png"))
+      Future.sequence(img.map(rpg.iamgeDao.create))
     } onComplete{
+      
       case Failure(exception) => exception match
         case ex@DBExeception(e) => ex.printStackTrace();console.log(e)
         case e => e.printStackTrace()

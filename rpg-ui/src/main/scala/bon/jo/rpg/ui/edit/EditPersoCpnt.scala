@@ -28,6 +28,9 @@ import bon.jo.rpg.Affect
 import bon.jo.rpg.SystemElement
 import bon.jo.rpg.Commande
 import bon.jo.rpg.ui.Rpg
+           import org.scalajs.dom.raw.HTMLImageElement
+           import bon.jo.rpg.dao.ImageDao
+           import bon.jo.rpg.ui.Image
            
 object Types:
   type Pram = SType.Param[Perso]
@@ -47,12 +50,14 @@ extends EditStatWithName[Perso]  (
   initial, option)(repStat) with SType.EditStatWithDao[Perso]:
   override implicit val rep: HtmlRepParam[Perso, Pram, EditStatWithName[Perso]] = EditPersoCpnt
 
-  override def randomValue: Perso = Actor.randomActor(e => new Perso(initial.id, RandomName(),"Le plus beau des héros", e))
+  override def randomValue: Perso = Actor.randomActor(e => new Perso(initial.id, RandomName(),"Le plus beau des héros", e,Image("")))
   override val  dao: Dao[Perso, Int] = option.rpg.persoDao
+  
   val equipRight: Button = bsButton("+")
   val equipLeft: Button = bsButton("+")
   private var varRightHand: Option[Weapon] = initial.rightHandWeapon
   private var varLeftHand: Option[Weapon] = initial.leftHandWeapon
+
 
 
   def getAction(str: String): Option[bon.jo.rpg.SystemElement] = 
@@ -109,10 +114,44 @@ extends EditStatWithName[Perso]  (
   private val rightArm = spanArm(initial.rightHandWeapon)
   private val handsCont = $va div List(leftArm, equipLeft, rightArm, equipRight)
 
-  override def create(id: Int, name: String,desc : String, intBaseStat: IntBaseStat, action: List[SystemElement]): Perso =
-    new Perso(id, name,desc, intBaseStat, lvl = 1, action.asInstanceOf[List[Commande]], leftHandWeapon = varLeftHand, rightHandWeapon = varRightHand)
+  val image :HTMLImageElement = html.$t.img[HTMLImageElement](html.$t.doOnMe(_.alt="Add Image"))
+  image.style.width = "15em"
+  image.style.height = "15em"
 
-  override def beforeStatOption: Option[HTMLElement] = Some( $va div List(handsCont))
+
+  if initial.image.path != "" then image.src = initial.image.path
+
+
+  val imageCnt = html.$.div{
+    $.childs(image)
+    $._class("perso-edit-img")
+  }
+
+  given ImageDao = option.rpg.iamgeDao
+  given ExecutionContext = option.rpg.executionContext
+  val chose = new ImageChoose()
+  var isChoosing = false
+  image.$click{
+    e => 
+      if !isChoosing then
+        isChoosing = true
+        imageCnt.appendChild(chose.root)
+        chose.root.style.top = (imageCnt.getBoundingClientRect.top -15).toString+"px"
+        chose.root.style.left =( imageCnt.getBoundingClientRect.left-15).toString+"px"
+        chose.chooseImage().map{ i =>
+            image.src = i.path
+            isChoosing = false
+            println("remove")
+            chose.root.clear()
+            chose.list.foreach(_.removeFromDom())
+        }
+        
+  }
+
+  override def create(id: Int, name: String,desc : String, intBaseStat: IntBaseStat, action: List[SystemElement]): Perso =
+    new Perso(id, name,desc, intBaseStat, lvl = 1, action.asInstanceOf[List[Commande]], leftHandWeapon = varLeftHand, rightHandWeapon = varRightHand,image = Image(image.src))
+
+  override def beforeStatOption: Option[HTMLElement] = Some( $va div List(handsCont,imageCnt))
 
 
   equipAction(equipRight, rightArm) {

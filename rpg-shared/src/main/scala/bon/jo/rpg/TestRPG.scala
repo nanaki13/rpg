@@ -15,6 +15,7 @@ import bon.jo.rpg.resolve.given
 import bon.jo.rpg.resolve.PersoCtx
 import bon.jo.rpg.AffectResolver.Resolver
 import bon.jo.rpg.Commande.Garde
+import bon.jo.rpg.ui.Image
 
 
 object TestRPG extends App:
@@ -38,8 +39,8 @@ object TestRPG extends App:
   val ui : Perso.WithUI =  Perso.WithUI()
 
 
-  val p1 = new Perso(1, "Bob", "Un bon gars", AnyRefBaseStat.randomInt(50, 10))
-  val p2 = new Perso(2, "Bill", "Un bon gars", AnyRefBaseStat.randomInt(50, 10))
+  val p1 = new Perso(1, "Bob", "Un bon gars", AnyRefBaseStat.randomInt(50, 10),Image(""))
+  val p2 = new Perso(2, "Bill", "Un bon gars", AnyRefBaseStat.randomInt(50, 10),Image(""))
 
 
   import ui.given
