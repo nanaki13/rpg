@@ -92,32 +92,39 @@ class PerCpnt(val perso: Perso) extends HtmlCpnt with UpdatableCpnt[Perso]:
   def statWithMod: List[HTMLElement] = armR map (_.parent)
 
 
+  
 
   override val get: IterableOnce[HTMLElement] =
     val hideStat = $.div{$.text("+")}
     val carChild = List(row(List($t("stat") +: contStat, $t("L") +: contArmL, $t("G") +: contArmR, $t("stat+") +: lcomputedStat)))
-    val carac = $va div List(hideStat)
+    val carac = ($va div carChild) := { me =>
+        me._class = "card-body black-on-white"
+        me.style.fontSize = "0.7em"
+        me.style.position = "fixed"
+        
+      }
     hideStat.style.zIndex = "1000"
     hideStat.style.cursor = "pointer"
+    var old : String = null
     hideStat.$click{
       e => {
         if hideStat.textContent == "+"
         then
           hideStat.textContent = "-"
-          carChild.foreach(carac.appendChild(_))
+          carac.style.top = s"${hideStat.getBoundingClientRect.bottom + 2}px"
+          carac.style.left = s"${hideStat.getBoundingClientRect.left}px"
+          hideStat.parentElement.appendChild(carac)
+
         else
+          old = carac.style.padding 
           hideStat.textContent = "+"
-          carChild.foreach(_.removeFromDom())
+          carac.removeFromDom()
       }
     }
     val ret = $va div List(
       $va div List((nameDiv.wrap(tag.div))) := { me =>
         me._class = "card-title black-on-white"
-      },descDiv,hpVarCpnt.html,
-        carac := { me =>
-        me._class = "card-body black-on-white"
-        me.style.fontSize = "0.7em"
-      }
+      },descDiv,hpVarCpnt.html,hideStat
       )
     ret._class = "card bg-2 d-inline-block"
 
