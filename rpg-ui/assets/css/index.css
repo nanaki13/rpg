@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
 div#root {
   background-color: #edfffe;
   
 }
 app-rpg{
-    font-family: 'Architects Daughter', cursive;
+    font-family: 'DotGothic16', sans-serif;
+    color: white;
 }
 .black-on-white {
   background: #15151438;
@@ -21,6 +23,9 @@ app-rpg{
 }
 .edit-card {
   width: 25em;
+  border: #9f0a0a ridge 0.1em;
+ 
+  border-radius: 2%;
 }
 .menu {
   position: fixed;
@@ -42,12 +47,12 @@ app-rpg{
   color: aliceblue;
 }
 .bg-1 {
-  background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870130454567/image1.jpg");
+ /* background-image: url("https://cdn.discordapp.com/attachments/810628913515593779/843615870130454567/image1.jpg");
   background-repeat: no-repeat;
   background-size: contain;
   background-attachment: fixed;
-  background-position: center;
-  background-color: #d0d1fad1;
+  background-position: center;*/
+  background-color: black;
   height: fit-content;
 }
 .bg-2 {
@@ -100,4 +105,41 @@ app-rpg{
   width: 15em;
   height: 15em;
   margin: auto;
+}
+
+.perso-carac{
+  z-index: 999;
+  font-size: 0.95em;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 0;
+  width: 0;
+}
+.perso-carac-cont{
+  background: #058536;
+  border: #9f0a0a ridge 0.1em;
+  width: max-content;
+}
+.team-cont{
+  display: flex;
+  flex-wrap: wrap;
+}
+.area{
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  
+}
+.nomans{
+  width: 5em;
+}
+
+.flex{
+  display: flex;
+}
+
+.progress {
+  height: unset;
+  width: 100%;
 }

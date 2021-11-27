@@ -44,7 +44,7 @@ import bon.jo.rpg.ui.HtmlUi
 import bon.jo.rpg.ui.page.RpgSimuPage
 import scala.concurrent.Future
 import bon.jo.html.PopUp
-
+import bon.jo.html.DomBuilder.html.$
 import  bon.jo.rpg.resolve.ResolveFactory
 import bon.jo.rpg.dao.ImageJs
 import bon.jo.rpg.dao.ImageDao
@@ -137,15 +137,37 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
   
       val linkedUI = new WithUI()
       import linkedUI.given
-      
+     
+      def nomansLand = $ div {$ _class "nomans"}
+     
+      val area = $ div {$ _class "area"}
       cpntMap = timeLine.timedObjs.map{ v =>
         val htmlCpnt = v.value.asInstanceOf[Perso].html
         (v.id,htmlCpnt)
       }.toMap
+      val teamMap = timeLine.timedObjs.map{v =>
+        (v.id,v.team)
+      }.toMap
+      val teamCpntMap = teamMap.values.toSet.map(t => t -> ($ div {
+        $ _class "team-cont" 
+        $.attr("id" -> t.name) 
+      })).toMap
+      val teamCpnt = teamCpntMap.values.iterator.to(List)
+      area += teamCpnt(0)
+      teamCpnt.drop(1).foreach{
+        team =>
+        area += nomansLand
+        area += team
       
-
+      }
+      cpntMap.map{
+        (k,v) =>
+          val teamCpnt = teamCpntMap(teamMap(k))
+          teamCpnt ++= v.get.iterator.to(List)
+      }
+      root += area
       root.style.maxWidth = "80%"
-      cpntMap.flatMap(_._2.get).foreach(e => root += e)
+      //cpntMap.flatMap(_._2.get).foreach(e => root += e)
 
       clearUI
       val cpntTimeLine = new TimeLineCpnt( linkedUI,end)
