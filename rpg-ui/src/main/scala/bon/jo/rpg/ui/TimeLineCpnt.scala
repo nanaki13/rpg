@@ -2,9 +2,10 @@ package bon.jo.rpg.ui
 
 import bon.jo.html.HTMLDef.{$c, $t, $va, HtmlOps}
 import bon.jo.rpg.BattleTimeLine
-import bon.jo.html.DomBuilder._
-import bon.jo.rpg.BattleTimeLine._
-import bon.jo.rpg.raw._
+import bon.jo.html.DomBuilder.*
+import bon.jo.html.DomBuilder.html.$
+import bon.jo.rpg.BattleTimeLine.*
+import bon.jo.rpg.raw.*
 import bon.jo.rpg.raw
 import bon.jo.rpg.stat.Perso.WithUI
 import bon.jo.rpg.stat.{Perso, GameElement}
@@ -26,23 +27,34 @@ class TimeLineCpnt(val withUI: WithUI,end : (winner : Team,losser : List[Team])=
   import withUI.given
 
  // implicit val ui: Any = withUI.o.ui
-  val tlView: Div = $c.div
+  
+  val teams = el.timedObjs.map(_.team).toSet.toList
+  val t1 = $.div($._class("timeline-t timeline-t1"))
+  val t2 = $.div($._class("timeline-t timeline-t2"))
+  //t1.style.width = s"${el.params.action}px"
+  //t2.style.width = s"${el.params.action}px"
+  val tlView = $.div{
+    $.childs(t1,t2)
+    $._class("time-line")
+  }
   tlView.draggable = true
 
   tlView._class ="time-line"
   tlView.style.position = "absolute"
   tlView.style.top = "10px"
   tlView.style.right = s"0"
-
-  val htmlName = el.timedObjs.map(_.simpleName).map(t => $t span t)
+  val teamCpnTMap = Map(teams(0)-> t1, teams(1) -> t2)
+  val htmlName = el.timedObjs.map(t =>(t, $t span "|"))
   htmlName.map {
-    e =>
+   (t, e )=>
 
-      e.style.position = "absolute"
-      e
-  }.foreach(e => tlView.appendChild({
-    val in = e.wrap(tag.div)
-    in.style.height = "1em"
+      e.className = "cursor-timeline"
+      (t, e )
+  }.foreach((t, e ) => teamCpnTMap(t.team).appendChild({
+   
+
+    
+
     val s1: Span = $c.span
     s1.style.width = s"${el.params.chooseAction}px"
     s1.style.backgroundColor = "blue"
@@ -53,20 +65,28 @@ class TimeLineCpnt(val withUI: WithUI,end : (winner : Team,losser : List[Team])=
     s2.style.backgroundColor = "red"
     s2.style.height = "1em"
     s2.style.display = "inline-block"
-    val s3: Span = $c.span
-    s3.style.width = s"12em"
-    s3.style.backgroundColor = "green"
-    s3.style.opacity = "0"
-    s3.style.height = "1em"
-    s3.style.display = "inline-block"
-    in ++= (s1, s2, s3)
-    in
+    val (zones,cl,cl2) = if(t.team == teams(0)) then (List(e,s1, s2),"flex","battle-name-l") else (List(e,s2,s1),"flex-reverse","")
+    $.div{
+      $._class(cl)
+      $.childs($.div{
+        $._class("battle-name "+cl2)
+        $.text(t.simpleName)
+      }, 
+      $.div{
+        $._class("layer")
+        $.childs(zones : _ *)
+    })}
+  
   }))
 
   def update(e: Iterable[TimedTrait[_]]) =
     htmlName zip e foreach {
-      case (element, value) =>
-        element.style.left = value.pos.toString + "px"
+      case ((timTrait,element), value) =>
+        val nPosCss = if(timTrait.team == teams(0)) then 
+          value.pos -3 
+        else
+          el.params.action - value.pos - 3
+        element.style.left = nPosCss.toString + "px"
     }
 
 

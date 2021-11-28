@@ -79,7 +79,15 @@ app-rpg{
 }
 .time-line{
   color : white;
+ 
 }
+.timeline-t {
+  display: inline-block;
+}
+.timeline-t1 {
+  border-right-style: dashed;
+}
+
 .root-image-choose{
   z-index: 1000;
   position: fixed;
@@ -134,12 +142,36 @@ app-rpg{
 .nomans{
   width: 5em;
 }
+.battle-name{
+  width: 3em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 
+}
+.battle-name-l{
+  text-align: end;
+  
+}
 .flex{
   display: flex;
+}
+.flex-reverse{
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .progress {
   height: unset;
   width: 100%;
+}
+
+.layer {
+  position: relative;
+  left: 0;
+  top: 0;
+  height: 0;
+}
+.cursor-timeline{
+  position: absolute;
+  z-index: 1;
 }
