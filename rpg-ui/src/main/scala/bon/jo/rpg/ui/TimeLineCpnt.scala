@@ -39,10 +39,6 @@ class TimeLineCpnt(val withUI: WithUI,end : (winner : Team,losser : List[Team])=
   }
   tlView.draggable = true
 
-  tlView._class ="time-line"
-  tlView.style.position = "absolute"
-  tlView.style.top = "10px"
-  tlView.style.right = s"0"
   val teamCpnTMap = Map(teams(0)-> t1, teams(1) -> t2)
   val htmlName = el.timedObjs.map(t =>(t, $t span "|"))
   htmlName.map {

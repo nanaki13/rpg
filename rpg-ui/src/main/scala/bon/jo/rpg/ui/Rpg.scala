@@ -110,10 +110,9 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
             override def attaqueResolve:AttaqueResolve = (new PersoAttaqueResolve{}).createResolve
             override def slowResolve:SlowResolve = (new PersoSlowPersoFactory{}).createResolve
 
-            override def caffeinResolve:CaffeinResolve = (new ResolveFactory:
-              override val affect = Affect.Caffein
-              override def uiMessage(att: Perso,perso: Perso, factor: FactorEffectt):String = "CAFEEIN"
-            ).createResolve.asInstanceOf[CaffeinResolve]
+            override def caffeinResolve:CaffeinResolve = 
+              new ResolveFactory(Affect.Caffein){}
+              .createResolve.asInstanceOf[CaffeinResolve]
             override def hateResolve:HateResolve = (new PersoHateResolveFactory{}).createResolve
           }
           go
@@ -166,12 +165,13 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
           teamCpnt ++= v.get.iterator.to(List)
       }
       root += area
+      val cpntTimeLine = new TimeLineCpnt( linkedUI,end)
+      root.appendChild(cpntTimeLine.tlView)
       root.style.maxWidth = "80%"
       //cpntMap.flatMap(_._2.get).foreach(e => root += e)
 
       clearUI
-      val cpntTimeLine = new TimeLineCpnt( linkedUI,end)
-      root.appendChild(cpntTimeLine.tlView)
+
       cpntTimeLine.tlView.$userCanDrag()
       cpntTimeLine.doEvent()
       onChangePage += (() => timeLine.stop())

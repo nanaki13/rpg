@@ -79,6 +79,8 @@ app-rpg{
 }
 .time-line{
   color : white;
+  width: fit-content;
+  margin: auto;
  
 }
 .timeline-t {
