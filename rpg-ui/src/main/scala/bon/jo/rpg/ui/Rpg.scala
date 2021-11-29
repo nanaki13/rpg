@@ -32,6 +32,7 @@ import bon.jo.rpg.resolve.Formule
 import bon.jo.rpg.resolve.PersoAttaqueResolve
 import bon.jo.rpg.resolve.PersoSlowPersoFactory
 import bon.jo.rpg.resolve.PersoHateResolveFactory
+import bon.jo.rpg.resolve.SoinResolveFactory
 import bon.jo.rpg.dao.FormuleDao
 import org.scalajs.dom.raw.HTMLElement
 import bon.jo.rpg.AffectResolver.AffectFormuleResolver
@@ -48,6 +49,7 @@ import bon.jo.html.DomBuilder.html.$
 import  bon.jo.rpg.resolve.ResolveFactory
 import bon.jo.rpg.dao.ImageJs
 import bon.jo.rpg.dao.ImageDao
+import SoinResolveFactory.given
 
 
 
@@ -114,6 +116,7 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
               new ResolveFactory(Affect.Caffein){}
               .createResolve.asInstanceOf[CaffeinResolve]
             override def hateResolve:HateResolve = (new PersoHateResolveFactory{}).createResolve
+            override def soinResolve: SoinResolve = SoinResolveFactory.resolve
           }
           go
 

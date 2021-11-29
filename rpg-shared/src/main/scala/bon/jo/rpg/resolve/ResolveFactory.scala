@@ -35,7 +35,7 @@ trait ResolveFactory(val affect :  Affect)(using formulesMap: Map[Formule.ID, Fo
   def turnDurationF: ((IntBaseStat, IntBaseStat)) => Float = turnDuration.formule.toFunction[(IntBaseStat, IntBaseStat)]()
   type P = TimedTrait[GameElement]
   def uiMessage(att: Perso,perso: Perso, factor: FactorEffectt)(using ui: PlayerUI): Unit = 
-    ui.message(s" ${att.name} fait ${factor.name.name} sur ${perso.name}",5000)
+    ui.message(s" ${att.name} fait ${factor.name.name} sur ${perso.name}, ${factor.name.name} dûr ${factor.time} tour et est de force ${factor.factor}",5000)
 
     
   def createResolve: Resolver[TimedTrait[Perso], TimedTrait[GameElement],affect.type] =
