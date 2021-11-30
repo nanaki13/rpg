@@ -43,13 +43,20 @@ import bon.jo.rpg.dao.ImageDao
 import bon.jo.rpg.dao.ImageJs
 import bon.jo.dao.IndexedDB.Version
 import org.scalajs.dom.experimental.URLSearchParams
+import bon.jo.rpg.ui.page.Page
+import bon.jo.rpg.ui.page
+import bon.jo.rpg.ui.page.RpgPage
+import org.scalajs.dom.raw.Location
 object RpgJsMain extends App:
   given  ((Weapon, Int) => Weapon) = _.withId(_) 
   given  ((Perso, Int) => Perso) = _.withId(_) 
   given Version = Version(5)
   document.body.classList.add("bg-1")
   object editPage extends EditFormulePage
-  given Rpg with
+  trait WithMenu:
+    self: Rpg =>
+      val menu : Menu
+  given Rpg with WithMenu with
     override implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
     val weaponJsDao: WeaponDaoJs = new WeaponDaoJs {
       override implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -66,9 +73,7 @@ object RpgJsMain extends App:
       def keyPath : Array[String] = Array("affect","formuleType")
     }
 
-    given Conversion[String,scalajs.js.Any] = (s : String) => 
-      val ret :  js.Any = s
-      ret
+    given Conversion[String,scalajs.js.Any] = s => s
     val imageDaoJs: ImageDaoJs = new ImageDaoJs {
       override implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.global
       def keyPath  : String = "path"
@@ -132,63 +137,30 @@ object RpgJsMain extends App:
       }
       PopUp(div)
 
-    
+    given Page.Ctx[page.Id] = Page.Ctx(List(
+      RpgPage.EditArme("éditer/créer Arme") ,
+      RpgPage.EditPerso("éditer/créer Perso"),
+      RpgPage.Simulation("Simulation" ),
+      RpgPage.Export("Export" ),
+      RpgPage.Import("Import" ),
+      RpgPage.EditFormule("Edit Formule"),
+      RpgPage.News( "News")))
     val menu = new Menu(
-      "éditer/créer Arme" -> initChoixArme,
+      Page(page.Id.EditArme) -> initChoixArme ,
 
-      "éditer/créer Perso" -> initChoixPerso,
-      "Simulation" -> (() => 
-        org.scalajs.dom.window.location.search = "page=simulation"
-        simulation()
-        ),
-      "Export" -> exportF,"Import" -> importDataPopUp,
-      "Test Formule" -> editPage.editPage(using root),
-      "Edit Formule" -> (() => EditFormauleAffect.simulation),
-      "News" -> (() =>
+      Page(page.Id.EditPerso)  -> initChoixPerso,
+      Page(page.Id.Simulation)  -> simulation,
+      Page(page.Id.Export)  -> exportF,
+      Page(page.Id.Import)  -> importDataPopUp,
+     // "Test Formule" -> editPage.editPage(using root),
+      Page(page.Id.EditFormule) -> (() => EditFormauleAffect.simulation),
+      Page(page.Id.News) -> (() =>
         root.clear()
         root += ChangeLog.head
         ))
     def init(): HTMLElement =
       root.parentElement += menu.cont
 
-
-  class Menu(val menuItems: (String, () => Unit)*)(using Rpg : Rpg):
-    val links: Seq[HTMLElement] = menuItems.map {
-      case (str, unit) =>
-        $c.a[Anchor] := (menuLink => {
-          menuLink.text = str
-          menuLink._class = "dropdown-item nav-link menu-link"
-          menuLink.$click { _ =>
-            Rpg.root.clear()
-            Rpg.onChangePage.foreach(_())
-            Rpg.onChangePage.clear()
-            unit()
-          }
-        })
-
-    }
-    val cont: HTMLElement = $ref nav {
-      d =>
-        d._class = "menu nav bg-white rounded"
-        val li = $c.li[HTMLLIElement] := (_._class = "nav-item dropdown")
-        li += aSubMenu("Menu")
-        li += ($c.div[Div] := {
-          e =>
-            e._class = "dropdown-menu"
-            e ++= links.toList
-        })
-        d += li
-
-
-    }
-
-    private def aSubMenu(t: String) = $c.a[Anchor] := {
-      s =>
-        s._class = "nav-link dropdown-toggle"
-        s.href = "#"
-        s.text = t
-        s.$attr(List("data-toggle" -> "dropdown", "role" -> "button", "aria-haspopup" -> "true", "aria-expanded" -> "false"))
-    }
 
 
 
@@ -246,11 +218,60 @@ object RpgJsMain extends App:
       case Success(_) => 
         PopUp("start ok")
          val paramParser: URLSearchParams = new URLSearchParams(org.scalajs.dom.window.location.search)
-          Option(paramParser.get("page")).foreach{
-            case "simulation" =>  rpg.simulation()
+         
+          Option(paramParser.get("page")).foreach{ pageString =>
+             rp match 
+               case z : WithMenu => z.menu.navigate(pageString)
+               case _  => 
+             
           }
     }
   init()
+
+
+class Menu(val menuItems: (Page[page.Id], () => Unit)*)(using Rpg : Rpg):
+  given Location = org.scalajs.dom.window.location
+
+  def navigate(s : String) = menuItems.find(_._1.id == page.Id.valueOf(s)).foreach(_._2())
+  val links: Seq[HTMLElement] = menuItems.map {
+    case (str, unit) =>
+      $c.a[Anchor] := (menuLink => {
+        menuLink.text = str.label
+        menuLink._class = "dropdown-item nav-link menu-link"
+        menuLink.$click { _ =>
+          Rpg.root.clear()
+          Rpg.onChangePage.foreach(_())
+          Rpg.onChangePage.clear()
+          Page.setNavigationBar(str)(using org.scalajs.dom.window)
+          unit()
+        }
+      })
+
+  }
+  val cont: HTMLElement = $ref nav {
+    d =>
+      d._class = "menu nav bg-white rounded"
+      val li = $c.li[HTMLLIElement] := (_._class = "nav-item dropdown")
+      li += aSubMenu("Menu")
+      li += ($c.div[Div] := {
+        e =>
+          e._class = "dropdown-menu"
+          e ++= links.toList
+      })
+      d += li
+
+
+  }
+
+  private def aSubMenu(t: String) = $c.a[Anchor] := {
+    s =>
+      s._class = "nav-link dropdown-toggle"
+      s.href = "#"
+      s.text = t
+      s.$attr(List("data-toggle" -> "dropdown", "role" -> "button", "aria-haspopup" -> "true", "aria-expanded" -> "false"))
+  }
+
+
   
 
 
