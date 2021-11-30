@@ -10,7 +10,7 @@ import scala.util.Random
 import bon.jo.rpg.util.Script.*
 import bon.jo.rpg.resolve.PersoResolveContext.*
 import bon.jo.rpg.AffectResolver.Resolver
-trait ResolveFactory(val affect :  Affect)(using formulesMap: Map[Formule.ID, Formule]):
+class ResolveFactory(val affect :  Affect)(using formulesMap: Map[Formule.ID, Formule]):
 
   import Formule.given
   import bon.jo.common.give.given

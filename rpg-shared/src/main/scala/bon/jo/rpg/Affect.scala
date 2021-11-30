@@ -30,8 +30,9 @@ enum Affect(val name : String,val vivMod:Option[Float] = None) extends SystemEle
     case Affect.Slow => FormuleType.withoutDegat()
     case Affect.Caffein => FormuleType.withoutDegat()
     case Affect.Hate => FormuleType.withoutDegat()
+    case Affect.Booster => FormuleType.withoutDegat()
+    case Affect.Cancel => Some(FormuleType.Factor) 
     case Affect.Soin =>  Some(FormuleType.Factor) 
-    case _ => Some(FormuleType.ChanceToSuccess)
 
 
 

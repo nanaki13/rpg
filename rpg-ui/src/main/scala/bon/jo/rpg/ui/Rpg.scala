@@ -33,6 +33,7 @@ import bon.jo.rpg.resolve.PersoAttaqueResolve
 import bon.jo.rpg.resolve.PersoSlowPersoFactory
 import bon.jo.rpg.resolve.PersoHateResolveFactory
 import bon.jo.rpg.resolve.SoinResolveFactory
+import bon.jo.rpg.resolve.CancelResolveFactory
 import bon.jo.rpg.dao.FormuleDao
 import org.scalajs.dom.raw.HTMLElement
 import bon.jo.rpg.AffectResolver.AffectFormuleResolver
@@ -50,6 +51,7 @@ import  bon.jo.rpg.resolve.ResolveFactory
 import bon.jo.rpg.dao.ImageJs
 import bon.jo.rpg.dao.ImageDao
 import SoinResolveFactory.given
+import CancelResolveFactory.given
 
 
 
@@ -109,14 +111,18 @@ trait Rpg extends Ec with ArmesPage with RpgSimuPage with AffectFormuleResolver:
           ( f  :  Map[Formule.ID,Formule] )=>
           given Map[Formule.ID,Formule] =f
           given ResolveContext = new resolve.DefaultResolveContext{
+
             override def attaqueResolve:AttaqueResolve = (new PersoAttaqueResolve{}).createResolve
             override def slowResolve:SlowResolve = (new PersoSlowPersoFactory{}).createResolve
+            override def cancelResolve:CancelResolve = CancelResolveFactory.resolve
 
             override def caffeinResolve:CaffeinResolve = 
-              new ResolveFactory(Affect.Caffein){}
-              .createResolve.asInstanceOf[CaffeinResolve]
-            override def hateResolve:HateResolve = (new PersoHateResolveFactory{}).createResolve
+              ResolveFactory(Affect.Caffein).createResolve.asInstanceOf[CaffeinResolve]
+            override def hateResolve:HateResolve =
+              ResolveFactory(Affect.Hate).createResolve.asInstanceOf[HateResolve]
             override def soinResolve: SoinResolve = SoinResolveFactory.resolve
+            override def boosterResolve : BoosterResolver  =
+               ResolveFactory(Affect.Booster).createResolve.asInstanceOf[BoosterResolver]
           }
           go
 

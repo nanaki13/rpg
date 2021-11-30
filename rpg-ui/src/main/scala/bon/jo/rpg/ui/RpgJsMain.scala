@@ -42,6 +42,7 @@ import bon.jo.rpg.dao.ImageDao.ImageDaoJs
 import bon.jo.rpg.dao.ImageDao
 import bon.jo.rpg.dao.ImageJs
 import bon.jo.dao.IndexedDB.Version
+import org.scalajs.dom.experimental.URLSearchParams
 object RpgJsMain extends App:
   given  ((Weapon, Int) => Weapon) = _.withId(_) 
   given  ((Perso, Int) => Perso) = _.withId(_) 
@@ -136,7 +137,10 @@ object RpgJsMain extends App:
       "éditer/créer Arme" -> initChoixArme,
 
       "éditer/créer Perso" -> initChoixPerso,
-      "Simulation" -> simulation,
+      "Simulation" -> (() => 
+        org.scalajs.dom.window.location.search = "page=simulation"
+        simulation()
+        ),
       "Export" -> exportF,"Import" -> importDataPopUp,
       "Test Formule" -> editPage.editPage(using root),
       "Edit Formule" -> (() => EditFormauleAffect.simulation),
@@ -196,42 +200,55 @@ object RpgJsMain extends App:
     given HTMLElement  = rpg.root
     IndexedDB.init(rp.weaponDao.daoJs, rp.persoDao.daoJs, rp.formuleDao.daoJs,rp.iamgeDao.daoJs) flatMap { _ =>
       rp.init()
-      val img = List(Image("assets/img/Apollo.png"),
-      Image("assets/img/Apollo2.png"),
-      Image("assets/img/Bandit.png"),
-      Image("assets/img/Cid.png"),
-      Image("assets/img/Commandant.png"),
-      Image("assets/img/ElecBird.png"),
-      Image("assets/img/Felin.png"),
-      Image("assets/img/Giant.png"),
-      Image("assets/img/Gob.png"),
-      Image("assets/img/Igaroid.png"),
-      Image("assets/img/Insect.png"),
-      Image("assets/img/Kid.png"),
-      Image("assets/img/Kid2.png"),
-      Image("assets/img/Linoa.png"),
-      Image("assets/img/Luck.png"),
-      Image("assets/img/Luck2.png"),
-      Image("assets/img/Magnet.png"),
-      Image("assets/img/Magus.png"),
-      Image("assets/img/Mirror.png"),
-      Image("assets/img/Momo.png"),
-      Image("assets/img/Monitorog.png"),
-      Image("assets/img/PotHead.png"),
-      Image("assets/img/RedDemon.png"),
-      Image("assets/img/Robo.png"),
-      Image("assets/img/RobotLord.png"),
-      Image("assets/img/Time.png"),
-      Image("assets/img/Wheel.png"),
-      Image("assets/img/YellowDemon.png"),
-      Image("assets/img/Bandit.png"))
-      Future.sequence(img.map(rpg.iamgeDao.create))
+      rpg.iamgeDao.readIds().flatMap{
+        ids => 
+          if ids.isEmpty then
+            val img = List(Image("assets/img/Apollo.png"),
+            Image("assets/img/Apollo2.png"),
+            Image("assets/img/Bandit.png"),
+            Image("assets/img/Cid.png"),
+            Image("assets/img/Commandant.png"),
+            Image("assets/img/ElecBird.png"),
+            Image("assets/img/Felin.png"),
+            Image("assets/img/Giant.png"),
+            Image("assets/img/Gob.png"),
+            Image("assets/img/Igaroid.png"),
+            Image("assets/img/Insect.png"),
+            Image("assets/img/Kid.png"),
+            Image("assets/img/Kid2.png"),
+            Image("assets/img/Linoa.png"),
+            Image("assets/img/Luck.png"),
+            Image("assets/img/Luck2.png"),
+            Image("assets/img/Magnet.png"),
+            Image("assets/img/Magus.png"),
+            Image("assets/img/Mirror.png"),
+            Image("assets/img/Momo.png"),
+            Image("assets/img/Monitorog.png"),
+            Image("assets/img/PotHead.png"),
+            Image("assets/img/RedDemon.png"),
+            Image("assets/img/Robo.png"),
+            Image("assets/img/RobotLord.png"),
+            Image("assets/img/Time.png"),
+            Image("assets/img/Wheel.png"),
+            Image("assets/img/YellowDemon.png"),
+            Image("assets/img/Bandit.png"))
+            Future.sequence(img.map(rpg.iamgeDao.create))
+          else
+            Future.successful(Nil)
+
+      }
+
     } onComplete{
       
       case Failure(exception) => exception match
         case ex@DBExeception(e) => ex.printStackTrace();console.log(e)
         case e => e.printStackTrace()
-      case Success(_) =>     PopUp("start ok");  EditFormauleAffect.simulation
+      case Success(_) => 
+        PopUp("start ok")
+         val paramParser: URLSearchParams = new URLSearchParams(org.scalajs.dom.window.location.search)
+          Option(paramParser.get("page")).foreach{
+            case "simulation" =>  rpg.simulation()
+          }
     }
   init()
   
