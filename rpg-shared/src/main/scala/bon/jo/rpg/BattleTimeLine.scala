@@ -57,19 +57,19 @@ object BattleTimeLine:
       pause = 0
 
 
-    def update(maxViv : Int)(pf: TPA): TPA =
+    def update(maxSpeed : Float)(pf: TPA): TPA =
       if !pf.isDead then
-        pf.withPos(pf.pos + pf.speed(maxViv))
+        pf.withPos(pf.pos + pf.speed(maxSpeed))
       else
         pf
 
 
-    def state(e : LTPA,maxViv : Int): Seq[(TPA, State)] = e.map(p => (p, state(p,maxViv)))
+    def state(e : LTPA,maxSpeed : Float): Seq[(TPA, State)] = e.map(p => (p, state(p,maxSpeed)))
     
-    def state(pos: TPA,maxViv : Int): State =
+    def state(pos: TPA,maxSpeed : Float): State =
       if(!pos.isDead) then
         
-        val spooed = pos.speed(maxViv)
+        val spooed = pos.speed(maxSpeed)
         pos.pos match
           case i if (i < params.chooseAction) => State.BeforeChooseAction
           case i if (i >= params.chooseAction && (i < params.chooseAction + spooed)) => State.ChooseAction
@@ -79,9 +79,9 @@ object BattleTimeLine:
       else
         State.NoState  
 
-    def updateAll(a :LTPA,maxViv : Int ): LTPA =
+    def updateAll(a :LTPA,maxSpeed : Float ): LTPA =
  
-      a.map(update(maxViv))
+      a.map(update(maxSpeed))
 
     def dochange(all : ITPA,update : List[UpdateGameElement])(using ui :   WithUI): ITPA = 
       val mapById = all.map(e => e.id -> e).toMap
@@ -153,8 +153,8 @@ object BattleTimeLine:
       given d : Long= System.currentTimeMillis
       val ret =  
         if pause == 0 then
-          val maxViv = timedObjs.map(_.stats.viv).max
-          val state_ :  Seq[(TPA, State)]=  state(updateAll(timedObjs,maxViv),maxViv)
+          val maxPeed = timedObjs.map(_.speed()).max
+          val state_ :  Seq[(TPA, State)]=  state(updateAll(timedObjs,maxPeed),maxPeed)
           def m : Map[GameId.ID,TPA] = state_.map(_._1).map(( a:TPA ) => a.id -> a).toMap
           uiUpdate(state_.map(_._1))
           val cpntMap : Option[Map[GameId.ID,TimedTrait[GameElement]]] = if state_.count(_._2 == State.ResolveAction) > 0 then

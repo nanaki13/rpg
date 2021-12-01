@@ -6,7 +6,7 @@ trait Timed[A]:
   def simpleName(value: B ): String
 
 
-  def speed(a: B,maxViv : Int ): Int
+  def speed(a: B ): Float
 
 
 
