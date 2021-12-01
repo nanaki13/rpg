@@ -59,7 +59,7 @@ trait TimedTrait[-A] {
 
   def cast[T ] = this.asInstanceOf[T]
 
-  def speed: Int = (workerTimed.speed(value) * modifiers.map(_.speedMod).fold(1f)(_ * _)).round
+  def speed(maxViv : Int): Int = (workerTimed.speed(value,maxViv) * modifiers.map(_.speedMod).fold(1f)(_ * _)).round
 
   def canChoice: List[Commande]= workerTimed.canChoice(value)
   def withCommandeCtx(i: CommandeCtx): TimedTrait[A]
