@@ -30,7 +30,9 @@ object ChangeLog extends HtmlCpnt:
  
 
 
-    def valueTohtml(e : String)=  $.li(text(e))
+    def valueTohtml(e : String)=  $.li(doOnMe{
+        _.innerHTML = e
+    })
     
 
     given add : Add[HTMLElement] with
@@ -44,8 +46,8 @@ object ChangeLog extends HtmlCpnt:
 
 
     val data = List(ChangeLog(
-        "Version 1.0.0"
-        ,"06-2021" 
+        "Version 1.1.0-SNAPSHOT"
+        ,"12-2021" 
         , / (t.childs(
             / {
                 t.value("Séparation des actions en Affect et commande")
@@ -62,8 +64,33 @@ object ChangeLog extends HtmlCpnt:
                 )
             },
             / 
-            {t.value("Ebauchde de l'édition de fromule") 
-      
+            {t.value("Edition de formule complété") 
+             t.childs(
+                textTree("Correction de bug d'arrondi"),
+                textTree("Pour le moment, il est nécessaire de rentrer toute les formule")
+               
+                )
+            },
+            / 
+            {t.value("Edition perso") 
+             t.childs(
+                textTree("On peut ajouter des image!")
+               
+                )
+            },
+            / 
+            {t.value("Timeline") 
+             t.childs(
+                textTree("La vitesse des persos est pondéré par la vitesse max des persos,( effets des affects inclus)")
+               
+                )
+            },
+            / 
+            {t.value("Navigation dirext") 
+             t.childs(
+                textTree("""On peut aller directos a une page : <a href="./index.html?page=Simulation" >index.html?page=Simulation</a>""")
+               
+                )
             } 
        
             )
@@ -74,18 +101,16 @@ object ChangeLog extends HtmlCpnt:
                 row
                 $(
                     $ div{
-                      addClass("col-lg")
+                      addClass("col-6-lg")
                       $($ h3 {
                       
-                        text(c.version)  
-                      })  
-                    },
-                    $ div{
-                        addClass("col-lg")
-                        $($ h4 {
-                           
-                            text(c.date) 
-                        })
+                        text(c.version)   
+                      },
+                      $ h2 {
+                      
+                        text(c.date)   
+                      }
+                      )  
                     },
                     $ div{
                         addClass(s"col-lg")
