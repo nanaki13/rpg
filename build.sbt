@@ -8,7 +8,7 @@ import scala.sys.process._
 
 import Utils.git
 
-val mainVersion = "1.0.0-SNAPSHOT"
+val mainVersion = "1.1.0-SNAPSHOT"
 enablePlugins(ScalaJSPlugin)
 enablePlugins(JavaAppPackaging)
 javacOptions += "-Xmx2G"
