@@ -47,18 +47,18 @@ class ResolveFactory(val affect :  Affect)(using formulesMap: Map[Formule.ID, Fo
         (attp.value[Perso], ciblep.value[Perso]) match
           case (att: Perso, cible: Perso) =>
 
-            val chanceToHit = successF(att.stats, cible.stats).round
-            val factor = facteurF(att.stats, cible.stats).round
+            val chanceToHit = successF(att.stats, cible.stats)
+            val factor = facteurF(att.stats, cible.stats)
             val turnDuration = turnDurationF(att.stats, cible.stats).round
             PlayerUI(s"Rèsolution de ${affect.name} provenant de ${att.name} sur ${cible.name}")
             PlayerUI(s"Chance de succés : ${(chanceToHit * 100)} %")
-            r.draw(chanceToHit.toFloat,
+            r.draw(chanceToHit,
               e => PlayerUI(s"Lancer : ${(e * 100).round.toInt} %")
               ,
               ok = {
                 PlayerUI(s"Réussite!")
 
-                val eff: FactorEffectt = FactorEffectt(turnDuration, factor.toFloat, affect)
+                val eff: FactorEffectt = FactorEffectt(turnDuration, factor, affect)
                 uiProcess(att,ciblep.addEffect(eff), eff)
               }
               ,

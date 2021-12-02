@@ -20,15 +20,3 @@ enum Id:
   case EditFormule
   case News
 
-
-  /** "éditer/créer Arme" -> initChoixArme,
-
-      "éditer/créer Perso" -> initChoixPerso,
-      "Simulation" -> (() => 
-        org.scalajs.dom.window.location.search = "page=simulation"
-        simulation()
-        ),
-      "Export" -> exportF,"Import" -> importDataPopUp,
-      "Test Formule" -> editPage.editPage(using root),
-      "Edit Formule" -> (() => EditFormauleAffect.simulation),
-      "News" -> (() =>**/

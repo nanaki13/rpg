@@ -38,8 +38,8 @@ trait PersoSlowPersoFactory(using formulesMap: Map[Formule.ID, Formule]):
         (attp.value[Perso], ciblep.value[Perso]) match
           case (att: Perso, cible: Perso) =>
 
-            val chanceToHit = successF(att.stats, cible.stats).round
-            val factor = facteurF(att.stats, cible.stats).round
+            val chanceToHit = successF(att.stats, cible.stats)
+            val factor = facteurF(att.stats, cible.stats)
             val turnDuration = turnDurationF(att.stats, cible.stats).round
             PlayerUI(s"Chance de succés : ${(chanceToHit * 100)} %")
             r.draw(chanceToHit.toFloat,
@@ -48,7 +48,7 @@ trait PersoSlowPersoFactory(using formulesMap: Map[Formule.ID, Formule]):
               ok = {
                 PlayerUI(s"Réussite!")
 
-                val eff: FactorEffectt = FactorEffectt(turnDuration, factor.toFloat, Affect.Slow)
+                val eff: FactorEffectt = FactorEffectt(turnDuration, factor, Affect.Slow)
                 uiProcess(ciblep.addEffect(eff), eff)
               }
               ,

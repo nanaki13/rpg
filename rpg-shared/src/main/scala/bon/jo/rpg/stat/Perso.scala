@@ -41,7 +41,8 @@ object Perso:
   given Timed[GameElement] with
 
     override type B = Perso
-    override def speed(a: Perso): Int = (a.stats.viv / 10f).round
+
+    override def speed(a: Perso): Float = a.stats.viv.toFloat
 
     override def simpleName(value: Perso): String = value.name
 

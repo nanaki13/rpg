@@ -30,14 +30,14 @@ object CancelResolveFactory:
            
             ( att , cible) match
                 case (e : Perso,b : Perso) =>
-                    val recul = formuleFunction(e.stats,b.stats).round
+                    val recul = formuleFunction(e.stats,b.stats)
                     uiProcess(ciblep.withPos(ciblep.pos-recul),recul)
                 case z => ciblep
 
 
         
 
-        def uiProcess(perso : P,recul : Int)(using ui : PlayerUI):TimedTrait[GameElement]=
+        def uiProcess(perso : P,recul : Float)(using ui : PlayerUI):TimedTrait[GameElement]=
             perso.value[Perso] match
                 case e : Perso =>
                     ui.message(s"${e.name} été reculé de ${recul} dans le temps",5000)

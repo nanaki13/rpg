@@ -22,12 +22,12 @@ object TimedTrait:
   case class TimedObject( 
   _value: GameElement,
   id : GameId.ID,
-  _pos : Int= 0,
+  _pos : Float= 0,
   _commandeCtx : CommandeCtx,
   effetcts : List[Effect],
  _team : Team, modifiers :  List[Mod] = Nil)(using Timed[GameElement]) extends TimedTrait[GameElement]:
     val workerTimed: Timed[GameElement] = summon[Timed[GameElement]]
-    override def withPos(i: Int): TimedTrait[GameElement] = copy(_pos = i)
+    override def withPos(i: Float): TimedTrait[GameElement] = copy(_pos = i)
     
 
     override def withCommandeCtx(i: CommandeCtx): TimedTrait[GameElement] = copy(_commandeCtx = i)
@@ -51,7 +51,7 @@ trait TimedTrait[-A] {
   def stats : raw.IntBaseStat = _value.self.stats
   val effetcts : List[Effect]
 
-  def withPos(i: Int): TimedTrait[A]
+  def withPos(i: Float): TimedTrait[A]
   def withValue[B <: A](a: B): TimedTrait[B]
   def addEffect(effetct : Effect): TimedTrait[A]
   
@@ -59,7 +59,9 @@ trait TimedTrait[-A] {
 
   def cast[T ] = this.asInstanceOf[T]
 
-  def speed: Int = (workerTimed.speed(value) * modifiers.map(_.speedMod).fold(1f)(_ * _)).round
+  def speed(maxSpeed : Float): Float = 
+    3 * (workerTimed.speed(value) * modifiers.map(_.speedMod).fold(1f)(_ * _) / maxSpeed)
+  def speed(): Float = (workerTimed.speed(value) * modifiers.map(_.speedMod).fold(1f)(_ * _))
 
   def canChoice: List[Commande]= workerTimed.canChoice(value)
   def withCommandeCtx(i: CommandeCtx): TimedTrait[A]
@@ -68,7 +70,7 @@ trait TimedTrait[-A] {
   def commandeCtx: CommandeCtx = _commandeCtx
 
 
-  def pos: Int = _pos
+  def pos: Float = _pos
   def team: Team = self._team
 
   def simpleName: String = workerTimed.simpleName(value)
