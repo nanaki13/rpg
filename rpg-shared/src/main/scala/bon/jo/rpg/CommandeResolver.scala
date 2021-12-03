@@ -1,6 +1,7 @@
 package bon.jo.rpg
 import bon.jo.rpg.BattleTimeLine.UpdateGameElement
 import bon.jo.rpg.Commande.Rien
+import bon.jo.rpg.Commande.Combo
 import bon.jo.rpg.ui.PlayerUI
 import bon.jo.rpg.BattleTimeLine._
 import scala.reflect.ClassTag
@@ -17,6 +18,7 @@ object CommandeResolver:
   trait CommandeResolveCtx[A , B<: TPA]:
     given rien: Resolver[A , B,Rien.type]
     given attaque: Resolver[A , B,Commande.Attaque]
+    given combo: Resolver[A , B,Commande.Combo.type]
   trait Dispatcher[A,B <: TPA] :
     def resolveCommand[C ](a: A,  b: Iterable[B])(using C)(using r : Resolver[A , B,C] ) = r.resolveCommand(a,b)
     def dispacth(a: A,  b: Iterable[B],cc : Commande)(using c : CommandeResolveCtx[A,B],p : PlayerUI ) :   Iterable[UpdateGameElement] = 
@@ -24,6 +26,7 @@ object CommandeResolver:
       cc match 
         case given Commande.Rien.type => resolveCommand[Commande.Rien.type](a,b)
         case given Commande.Attaque => resolveCommand[Commande.Attaque](a,b)
+        case given Combo.type => resolveCommand[Commande.Combo.type](a,b)
         case a => 
           p.message(s"Pas encore fait : ${a}",0)
           Nil

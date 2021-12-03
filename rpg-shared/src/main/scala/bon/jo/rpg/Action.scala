@@ -60,7 +60,7 @@ enum LR:
   case R
   val id = toString
 object Commande:
-  def staticValues =  List(Garde,Evasion,ChangerDequipement,Voler,Rien)
+  def staticValues =  List(Garde,Evasion,ChangerDequipement,Voler,Rien,Combo)
   def apply(commande : String):Commande =  staticValues.find(_.toString == commande).get
   def apply(commande : String,left : Option[Weapon],right:Option[Weapon]):Commande=
     (left,right) match
@@ -79,6 +79,7 @@ enum Commande(val name : String) extends SystemElement:
   case ChangerDequipement extends Commande("changer d'équipement")  
   case Voler extends Commande("voler")  
   case Rien extends Commande("rien")  
+  case Combo extends Commande("combo")  
   val id = this match 
     case  Attaque( weapon : Weapon, hand : LR) => hand.id
     case _ => toString
