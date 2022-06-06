@@ -5,17 +5,17 @@ import bon.jo.common.Alg
 
 object BaseState:
 
-  object `0` extends AnyRefBaseStat.Impl[Int](0, 0, 0, 0, 0, 0, 0, 0, 0)
+  object `0` extends AnyRefBaseStat.Impl[Int](0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-  object `1` extends AnyRefBaseStat.Impl[Int](1, 1, 1, 1, 1, 1, 1, 1, 1)
+  object `1` extends AnyRefBaseStat.Impl[Int](1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
-  object `0f` extends AnyRefBaseStat.Impl[Float](0, 0, 0, 0, 0, 0, 0, 0, 0)
+  object `0f` extends AnyRefBaseStat.Impl[Float](0, 0, 0, 0, 0, 0, 0, 0, 0 , 0)
 
-  object `1f` extends AnyRefBaseStat.Impl[Float](1, 1, 1, 1, 1, 1, 1, 1, 1)
+  object `1f` extends AnyRefBaseStat.Impl[Float](1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
-  object `0d` extends AnyRefBaseStat.Impl[Double](0, 0, 0, 0, 0, 0, 0, 0, 0)
+  object `0d` extends AnyRefBaseStat.Impl[Double](0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-  object `1d` extends AnyRefBaseStat.Impl[Double](1, 1, 1, 1, 1, 1, 1, 1, 1)
+  object `1d` extends AnyRefBaseStat.Impl[Double](1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
   object ImplicitCommon:
     implicit val iToF: Int => Float = e => e.toFloat

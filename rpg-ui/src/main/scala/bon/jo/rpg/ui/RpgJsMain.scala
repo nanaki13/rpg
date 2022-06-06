@@ -50,7 +50,7 @@ import org.scalajs.dom.raw.Location
 object RpgJsMain extends App:
   given  ((Weapon, Int) => Weapon) = _.withId(_) 
   given  ((Perso, Int) => Perso) = _.withId(_) 
-  given Version = Version(5)
+  given Version = Version(6)
   document.body.classList.add("bg-1")
   object editPage extends EditFormulePage
   trait WithMenu:

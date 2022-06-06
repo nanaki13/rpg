@@ -10,15 +10,18 @@ import bon.jo.rpg.stat.GameElement
 import bon.jo.rpg.stat.StatsWithName
 import bon.jo.rpg.util.Script.*
 import bon.jo.rpg.stat.raw.IntBaseStat
+import bon.jo.rpg.BattleTimeLine.TimeLineParam
+
 object CancelResolveFactory:
     
     type ResolveCancel = Resolver[TimedTrait[Perso],TimedTrait[GameElement],Cancel.type]
     def resolve( using  ResolveCancel) : ResolveCancel = summon
 
-    given  ( using Map[Formule.ID, Formule] ) : ResolveCancel   with 
+    given  ( using Map[Formule.ID, Formule],TimeLineParam ) : ResolveCancel   with 
         import Formule.given
         import bon.jo.common.give.given
         given Affect = Affect.Cancel
+        val params : TimeLineParam = summon
         def formuleCancel = AffectResolver.read(FormuleType.Factor).getOrElse(throw new RuntimeException(s"no formules Cancel ${FormuleType.Factor}"))
         val formuleFunction = formuleCancel.formule.toFunction[(IntBaseStat, IntBaseStat)]()
         type P = TimedTrait[Perso]
@@ -30,7 +33,15 @@ object CancelResolveFactory:
            
             ( att , cible) match
                 case (e : Perso,b : Perso) =>
-                    val recul = formuleFunction(e.stats,b.stats)
+
+                    val delta = if(ciblep.pos > params.chooseAction) 
+                    then
+                        0.25f * params.action
+                    else
+                        0f
+                    summon[PlayerUI].message(s"delta : $delta",5000)
+                    val recul1 = formuleFunction(e.stats,b.stats) + delta
+                    val recul = if recul1 >= 0 then recul1 else 0
                     uiProcess(ciblep.withPos(ciblep.pos-recul),recul)
                 case z => ciblep
 

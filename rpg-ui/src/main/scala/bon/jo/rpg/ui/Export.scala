@@ -96,6 +96,7 @@ object Export:
         res = stats.res,
         psy = stats.psy,
         str = stats.str,
+        ser = stats.ser,
       ).asInstanceOf[StatJS]
 
     def unapply(value: StatJS): Option[IntBaseStat] =
@@ -107,7 +108,8 @@ object Export:
         value.vit,
         value.psy,
         value.res,
-        value.chc))
+        value.chc,
+        value.ser))
 
   trait StatJS extends js.Object:
     val hp: Int
@@ -119,6 +121,7 @@ object Export:
     val psy: Int
     val res: Int
     val chc: Int
+    val ser: Int
 
 
   trait PersoJS extends NameIdStat:

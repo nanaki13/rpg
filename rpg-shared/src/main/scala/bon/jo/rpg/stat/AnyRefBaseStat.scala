@@ -26,9 +26,10 @@ trait AnyRefBaseStat[+A] extends Product:
       f(vit),
       f(psy),
       f(res),
-      f(chc))
-  def toPropList: List[A] = List(hp,sp,viv,str,mag,vit,psy,res,chc)
-  def toPropName: List[String] = List("hp","sp","viv","str","mag","vit","psy","res","chc")
+      f(chc),
+      f(ser))
+  def toPropList: List[A] = List(hp,sp,viv,str,mag,vit,psy,res,chc,ser)
+  def toPropName: List[String] = List("hp","sp","viv","str","mag","vit","psy","res","chc","ser")
   def toNameValueList: List[(String,A)]=
     toPropName zip toPropList
   def toMap: Map[String,A]=
@@ -44,7 +45,8 @@ trait AnyRefBaseStat[+A] extends Product:
       op(vit, baseState),
       op(psy, baseState),
       op(res, baseState),
-      op(chc, baseState))
+      op(chc, baseState),
+      op(ser, baseState))
 
   def applyFloat(op: (A, Float) => Float, baseState: AnyRefBaseStat[Float]): AnyRefBaseStat[Float] =
     AnyRefBaseStat.Impl[Float](
@@ -56,7 +58,8 @@ trait AnyRefBaseStat[+A] extends Product:
       op(vit, baseState.viv),
       op(psy, baseState.psy),
       op(res, baseState.res),
-      op(chc, baseState.chc))
+      op(chc, baseState.chc),
+      op(ser, baseState.ser))
 
 
 
@@ -181,13 +184,19 @@ trait AnyRefBaseStat[+A] extends Product:
    * @return
    */
   def chc: A
-  override def toString = s"GenBaseState($hp, $sp, $viv, $str, $mag, $vit, $psy, $res, $chc)"
+  /**
+   * Gouverne les niveaux de cancel et résitance au cancel
+   *
+   * @return
+   */
+  def ser: A
+  override def toString = s"GenBaseState($hp, $sp, $viv, $str, $mag, $vit, $psy, $res, $chc , $ser)"
 object AnyRefBaseStat:
   def productElementNames: Iterator[String] = raw.BaseState.`0`.productElementNames
   val names : StringBaseStat = apply(productElementNames.map(e => (e , e)).toList)
   val r = new Random()
 
-  def apply[A]: (A, A, A, A, A, A, A, A, A) => Impl[A] = Impl.apply[A]
+  def apply[A]: (A, A, A, A, A, A, A, A, A, A) => Impl[A] = Impl.apply[A]
   def randomInt( center : Int,delta : Int): AnyRefBaseStat[Int] = apply[Int](()=>center + (delta*(1d-r.nextGaussian())).round.toInt)
   case class Impl[A](
                       override val hp: A,
@@ -198,7 +207,8 @@ object AnyRefBaseStat:
                       override val vit: A,
                       override val psy: A,
                       override val res: A,
-                      override val chc: A
+                      override val chc: A,
+                      override val ser: A
                     ) extends AnyRefBaseStat[A]{
 
   }
@@ -213,7 +223,8 @@ object AnyRefBaseStat:
         cv(baseState.vit),
         cv(baseState.psy),
         cv(baseState.res),
-        cv(baseState.chc)
+        cv(baseState.chc),
+        cv(baseState.ser)
       )
 
 
@@ -229,15 +240,16 @@ object AnyRefBaseStat:
         map("vit"),
         map("psy"),
         map("res"),
-        map("chc")
+        map("chc"),
+        map("ser")
       )
     def apply[A](c: ()=>A) =
 
-      val e = Impl(c(), c(), c(), c(), c(), c(), c(), c(), c())
+      val e = Impl(c(), c(), c(), c(), c(), c(), c(), c(), c(), c())
 
       e
     def apply[A](c: A) =
-      Impl(c, c, c, c, c, c, c, c, c)
+      Impl(c, c, c, c, c, c, c, c, c,c )
 
     def apply[A , T ](baseState: AnyRefBaseStat[T], baseStateT: AnyRefBaseStat[A], opF: (A, A) => A)(implicit cv: T => A) =
       Impl(
@@ -250,6 +262,7 @@ object AnyRefBaseStat:
         opF(cv(baseState.psy), baseStateT.psy),
         opF(cv(baseState.res), baseStateT.res),
         opF(cv(baseState.chc), baseStateT.chc),
+        opF(cv(baseState.ser), baseStateT.ser)
       )
 
 
