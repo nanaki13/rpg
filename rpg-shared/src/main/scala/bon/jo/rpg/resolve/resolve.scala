@@ -36,7 +36,10 @@ package resolve {
               case LR.L => extractResolveArme(a,b)(a.value[Perso].leftHandWeapon.get)
               case LR.R => extractResolveArme(a,b)(a.value[Perso].rightHandWeapon.get)
         
-
+      override def  combo = new:
+        def resolveCommand(a: TP[Perso],  b: Iterable[TPA])(using att : Commande.Combo.type): Iterable[UpdateGameElement] = ???
+          
+          
       override def  rien =  
         new CommandeResolver.Resolver[TP[Perso],TPA, bon.jo.rpg.Commande.Rien.type]:
           def resolveCommand(a: TP[Perso],  b: Iterable[TPA])(using att : Commande.Rien.type): Iterable[UpdateGameElement] = 
